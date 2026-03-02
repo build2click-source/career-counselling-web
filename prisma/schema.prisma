@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(STUDENT)
+  attempts  Attempt[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+model Exam {
+  id               String    @id @default(uuid())
+  title            String
+  description      String?
+  timeLimitMinutes Int
+  sections         Section[]
+  attempts         Attempt[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Section {
+  id             String          @id @default(uuid())
+  examId         String
+  title          String
+  order          Int
+  exam           Exam            @relation(fields: [examId], references: [id], onDelete: Cascade)
+  questionGroups QuestionGroup[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model QuestionGroup {
+  id         String     @id @default(uuid())
+  sectionId  String
+  type       String     // e.g., "Multiple Choice", "Fill in the blanks"
+  context    String?    // The reading passage or instructions
+  audioUrl   String?
+  imageUrl   String?
+  section    Section    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  questions  Question[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model Question {
+  id            String        @id @default(uuid())
+  groupId       String
+  text          String
+  options       String        // Stored as JSON string
+  correctAnswer String
+  marks         Float         @default(1.0)
+  audioUrl      String?
+  imageUrl      String?
+  group         QuestionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  responses     Response[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Attempt {
+  id          String     @id @default(uuid())
+  userId      String
+  examId      String
+  startTime   DateTime   @default(now())
+  endTime     DateTime?
+  isCompleted Boolean    @default(false)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam        Exam       @relation(fields: [examId], references: [id], onDelete: Cascade)
+  responses   Response[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Response {
+  id            String   @id @default(uuid())
+  attemptId     String
+  questionId    String
+  answerText    String
+  isCorrect     Boolean
+  marksObtained Float    @default(0)
+  attempt       Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
