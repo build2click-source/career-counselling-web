@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 // Start a new attempt
 export async function POST(request: NextRequest) {
@@ -56,7 +56,12 @@ export async function PUT(request: NextRequest) {
         }
 
         // Process responses and calculate score
-        const processedResponses = [];
+        const processedResponses: {
+            questionId: string;
+            answerText: string;
+            isCorrect: boolean;
+            marksObtained: number;
+        }[] = [];
 
         for (const res of responses) {
             // Fetch the actual question to verify the correct answer
@@ -79,10 +84,10 @@ export async function PUT(request: NextRequest) {
         }
 
         // Update the attempt with the responses
-        const updatedAttempt = await prisma.$transaction(async (prisma) => {
+        const updatedAttempt = await prisma.$transaction(async (tx) => {
             // Insert all responses
             for (const pr of processedResponses) {
-                await prisma.response.create({
+                await tx.response.create({
                     data: {
                         attemptId,
                         questionId: pr.questionId,
@@ -94,7 +99,7 @@ export async function PUT(request: NextRequest) {
             }
 
             // Mark attempt as completed
-            return await prisma.attempt.update({
+            return await tx.attempt.update({
                 where: { id: attemptId },
                 data: {
                     isCompleted: true,

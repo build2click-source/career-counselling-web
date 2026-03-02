@@ -1,0 +1,43 @@
+
+> ilets-exam-taker@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 6.0s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/15) ...
+  Generating static pages using 7 workers (3/15) 
+  Generating static pages using 7 workers (7/15) 
+  Generating static pages using 7 workers (11/15) 
+Γ£ô Generating static pages using 7 workers (15/15) in 548.5ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî Γùï /
+Γö£ Γùï /_not-found
+Γö£ Γùï /admin
+Γö£ Γùï /admin/exams/create
+Γö£ ╞Æ /admin/users/[userId]
+Γö£ ╞Æ /api/admin/attempts
+Γö£ ╞Æ /api/admin/attempts/[id]
+Γö£ ╞Æ /api/admin/exams
+Γö£ ╞Æ /api/attempts
+Γö£ ╞Æ /api/auth/[...nextauth]
+Γö£ ╞Æ /api/exams
+Γö£ ╞Æ /api/exams/[id]
+Γö£ ╞Æ /api/user-attempts
+Γö£ Γùï /dashboard
+Γö£ ╞Æ /exams/[id]/take
+Γö£ Γùï /login
+Γö£ Γùï /register
+Γö£ Γùï /results
+Γöö ╞Æ /results/[attemptId]
+
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+
