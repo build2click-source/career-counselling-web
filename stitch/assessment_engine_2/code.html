@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Assessment Engine - Engaging Ed-Tech</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#fb6a51",
+                        "background-light": "#f8f6f5",
+                        "background-dark": "#23120f",
+                        "accent": "#4CB944",
+                        "text-main": "#2D3142",
+                        "muted": "#9095A7"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                    boxShadow: {
+                        'soft': '0 8px 24px rgba(45, 49, 66, 0.08)',
+                    },
+                    keyframes: {
+                        'slide-up-fade-out': {
+                            '0%': { transform: 'translateY(0)', opacity: '1' },
+                            '100%': { transform: 'translateY(-40px)', opacity: '0' },
+                        },
+                        'slide-up-fade-in': {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        'progress-stripe': {
+                            '0%': { backgroundPosition: '1rem 0' },
+                            '100%': { backgroundPosition: '0 0' },
+                        }
+                    },
+                    animation: {
+                        'card-out': 'slide-up-fade-out 200ms ease-in forwards',
+                        'card-in': 'slide-up-fade-in 300ms ease-out forwards',
+                        'stripes': 'progress-stripe 1s linear infinite'
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #f8f6f5; /* background-light */
+            color: #2D3142; /* text-main */
+        }
+        
+        .progress-striped {
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+            background-size: 1rem 1rem;
+        }
+
+        .likert-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .likert-btn:hover {
+            border-color: #fb6a51; /* primary */
+        }
+
+        .likert-btn:hover .emoji {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .likert-btn.selected {
+            background-color: #fb6a51;
+            border-color: #fb6a51;
+        }
+
+        .emoji {
+            transition: transform 0.2s ease-in-out;
+            display: inline-block;
+        }
+        
+        /* Simulating the card transition state for visual demonstration */
+        .card-container:active {
+            animation: card-out 200ms ease-in forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start overflow-x-hidden relative">
+<!-- Top Navigation / Progress Header -->
+<div class="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+<div class="max-w-[960px] mx-auto px-6">
+<header class="flex flex-col sm:flex-row items-center justify-between py-4 h-auto sm:h-[80px] gap-4 sm:gap-8">
+<!-- Back/Context (Minimal Header for Focused View) -->
+<button aria-label="Go back" class="flex items-center text-muted hover:text-text-main transition-colors shrink-0 group self-start sm:self-auto mt-2 sm:mt-0">
+<span class="material-symbols-outlined text-xl mr-1 group-hover:-translate-x-1 transition-transform">arrow_back</span>
+<span class="text-sm font-semibold tracking-wide hidden sm:inline-block">Back</span>
+</button>
+<!-- Progress Bar Container -->
+<div class="flex-1 w-full max-w-[500px] flex flex-col gap-2">
+<div class="flex justify-between items-end px-1">
+<span class="text-xs font-bold text-muted uppercase tracking-wider">Module: Big 5</span>
+<span class="text-sm font-bold text-text-main">Question 42 of 60</span>
+</div>
+<!-- Chunky Progress Bar -->
+<div class="h-4 w-full bg-[#E5E7EB] rounded-full overflow-hidden">
+<div aria-valuemax="100" aria-valuemin="0" aria-valuenow="70" class="h-full bg-accent rounded-full progress-striped animate-stripes transition-all duration-500 ease-out" role="progressbar" style="width: 70%;"></div>
+</div>
+</div>
+<!-- Pause & Save Button -->
+<button class="shrink-0 flex items-center justify-center rounded-full h-10 px-5 bg-background-light text-text-main hover:bg-[#e9e6e4] transition-colors text-sm font-bold tracking-wide self-end sm:self-auto mb-2 sm:mb-0">
+<span class="material-symbols-outlined text-[18px] mr-2" style="font-variation-settings: 'FILL' 1;">pause_circle</span>
+                    Pause &amp; Save
+                </button>
+</header>
+</div>
+</div>
+<!-- Main Content Area: Assessment Engine -->
+<main class="flex-1 w-full flex items-center justify-center p-6 mt-10 sm:mt-20">
+<!-- Question Card Wrapper -->
+<div class="w-full max-w-[600px] card-container animate-card-in">
+<!-- White Surface Card -->
+<div class="bg-white rounded-[24px] shadow-soft p-8 sm:p-12 flex flex-col items-center text-center">
+<!-- Question Number/Category Badge -->
+<div class="mb-6 inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-background-light text-primary text-sm font-bold tracking-wider">
+                    Situational Judgment
+                </div>
+<!-- Question Text -->
+<h2 class="text-[24px] sm:text-[28px] font-bold text-text-main leading-tight mb-12">
+                    I thrive in fast-paced, unpredictable environments where priorities shift constantly.
+                </h2>
+<!-- Likert Scale -->
+<div class="w-full flex justify-between items-center px-2 sm:px-6 relative">
+<!-- Connecting Line (Visual only) -->
+<div class="absolute top-1/2 left-8 right-8 h-[2px] bg-background-light -z-10 -translate-y-1/2"></div>
+<!-- Option 1: Strongly Disagree -->
+<button aria-label="Strongly Disagree" class="likert-btn group flex flex-col items-center gap-3 bg-white border-2 border-muted/30 rounded-full w-[64px] h-[64px] justify-center focus:outline-none focus:ring-4 focus:ring-primary/30">
+<span class="text-[32px] emoji">😞</span>
+</button>
+<!-- Option 2: Disagree -->
+<button aria-label="Disagree" class="likert-btn group flex flex-col items-center gap-3 bg-white border-2 border-muted/30 rounded-full w-[64px] h-[64px] justify-center focus:outline-none focus:ring-4 focus:ring-primary/30">
+<span class="text-[32px] emoji">撇</span> <!-- Using closest available single character/emoji representation if needed, typically emojis render fine, sticking to standard unicodes -->
+<span class="text-[32px] emoji">😕</span>
+</button>
+<!-- Option 3: Neutral -->
+<button aria-label="Neutral" class="likert-btn group flex flex-col items-center gap-3 bg-white border-2 border-muted/30 rounded-full w-[64px] h-[64px] justify-center focus:outline-none focus:ring-4 focus:ring-primary/30">
+<span class="text-[32px] emoji">😐</span>
+</button>
+<!-- Option 4: Agree -->
+<button aria-label="Agree" class="likert-btn group flex flex-col items-center gap-3 bg-white border-2 border-muted/30 rounded-full w-[64px] h-[64px] justify-center focus:outline-none focus:ring-4 focus:ring-primary/30">
+<span class="text-[32px] emoji">🙂</span>
+</button>
+<!-- Option 5: Strongly Agree -->
+<button aria-label="Strongly Agree" class="likert-btn group flex flex-col items-center gap-3 bg-white border-2 border-muted/30 rounded-full w-[64px] h-[64px] justify-center focus:outline-none focus:ring-4 focus:ring-primary/30">
+<span class="text-[32px] emoji">🤩</span>
+</button>
+</div>
+<!-- Helper Text -->
+<div class="flex justify-between w-full px-2 sm:px-6 mt-6 text-sm font-semibold text-muted">
+<span class="text-left w-20">Strongly Disagree</span>
+<span class="text-right w-20">Strongly Agree</span>
+</div>
+</div>
+<!-- Keyboard Hint -->
+<p class="text-center text-muted text-sm mt-8 font-medium">
+                Use <kbd class="px-2 py-1 bg-white rounded shadow-sm border border-gray-200 font-mono text-xs mx-1">Tab</kbd> to navigate and <kbd class="px-2 py-1 bg-white rounded shadow-sm border border-gray-200 font-mono text-xs mx-1">Enter</kbd> to select.
+            </p>
+</div>
+</main>
+</body></html>

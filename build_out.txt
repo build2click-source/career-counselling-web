@@ -1,41 +1,46 @@
 
 > ilets-exam-taker@0.1.0 build
-> next build
+> prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 174ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
 
 Γû▓ Next.js 16.1.6 (Turbopack)
 - Environments: .env
 
   Creating an optimized production build ...
-Γ£ô Compiled successfully in 6.0s
+Γ£ô Compiled successfully in 7.3s
   Running TypeScript ...
   Collecting page data using 7 workers ...
-  Generating static pages using 7 workers (0/15) ...
-  Generating static pages using 7 workers (3/15) 
-  Generating static pages using 7 workers (7/15) 
-  Generating static pages using 7 workers (11/15) 
-Γ£ô Generating static pages using 7 workers (15/15) in 548.5ms
+  Generating static pages using 7 workers (0/14) ...
+  Generating static pages using 7 workers (3/14) 
+  Generating static pages using 7 workers (6/14) 
+  Generating static pages using 7 workers (10/14) 
+Γ£ô Generating static pages using 7 workers (14/14) in 513.5ms
   Finalizing page optimization ...
 
 Route (app)
 Γöî Γùï /
 Γö£ Γùï /_not-found
-Γö£ Γùï /admin
-Γö£ Γùï /admin/exams/create
-Γö£ ╞Æ /admin/users/[userId]
-Γö£ ╞Æ /api/admin/attempts
-Γö£ ╞Æ /api/admin/attempts/[id]
-Γö£ ╞Æ /api/admin/exams
-Γö£ ╞Æ /api/attempts
+Γö£ ╞Æ /admin
+Γö£ ╞Æ /api/assessment
+Γö£ ╞Æ /api/assessment/module/[type]/questions
+Γö£ ╞Æ /api/attempt/respond
+Γö£ ╞Æ /api/attempt/start
 Γö£ ╞Æ /api/auth/[...nextauth]
-Γö£ ╞Æ /api/exams
-Γö£ ╞Æ /api/exams/[id]
-Γö£ ╞Æ /api/user-attempts
+Γö£ ╞Æ /api/auth/register
+Γö£ ╞Æ /api/results
+Γö£ ╞Æ /assessment/[moduleId]
 Γö£ Γùï /dashboard
-Γö£ ╞Æ /exams/[id]/take
 Γö£ Γùï /login
 Γö£ Γùï /register
-Γö£ Γùï /results
-Γöö ╞Æ /results/[attemptId]
+Γöö Γùï /results
 
 
 Γùï  (Static)   prerendered as static content

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Engaging Ed-Tech - Results Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#fb6a51",
+                        "background-light": "#F4F7F6", // Updated to match PRD
+                        "background-dark": "#23120f",
+                        "surface": "#FFFFFF",
+                        "text-main": "#2D3142",
+                        "muted": "#9095A7",
+                        "accent": "#4CB944"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "2rem", 
+                        "xl": "3rem", 
+                        "2xl": "1.5rem", // 24px for cards
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 8px 24px rgba(45, 49, 66, 0.08)',
+                        'hover': '0 12px 32px rgba(45, 49, 66, 0.12)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: #F4F7F6; color: #2D3142; }
+        
+        /* Confetti Animation - pure CSS approximation */
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .confetti {
+            position: fixed;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            background-color: #fb6a51;
+            animation: fall 3s linear forwards;
+            z-index: 50;
+            pointer-events: none;
+        }
+        .confetti:nth-child(2n) { background-color: #4CB944; animation-duration: 2.5s; animation-delay: 0.2s; }
+        .confetti:nth-child(3n) { background-color: #fde047; animation-duration: 3.5s; animation-delay: 0.1s; }
+        .confetti:nth-child(4n) { background-color: #3b82f6; animation-duration: 2.8s; animation-delay: 0.3s; }
+        
+        /* Card Hover Expansion */
+        .match-card-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .match-card:hover .match-card-content {
+            max-height: 200px;
+            opacity: 1;
+            margin-top: 1rem;
+        }
+        .match-card {
+            transition: all 0.3s ease;
+        }
+        .match-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(45, 49, 66, 0.12);
+        }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; }
+            nav, .sidebar, .print-hide { display: none !important; }
+            .print-full-width { width: 100% !important; max-width: 100% !important; }
+            .match-card-content { max-height: none !important; opacity: 1 !important; margin-top: 1rem !important; }
+            .match-card { page-break-inside: avoid; border: 1px solid #e5e7eb; box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-background-light min-h-screen text-text-main font-display selection:bg-primary selection:text-white">
+<!-- Top Navigation (Shared Component - Included because this is a Destination screen) -->
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden print-full-width">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-gray-200 bg-white px-10 py-3 sticky top-0 z-40 print-hide shadow-sm">
+<div class="flex items-center gap-4 text-text-main">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-text-main text-xl font-bold leading-tight tracking-[-0.015em]">Engaging Ed-Tech</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 shadow-sm border border-gray-100" data-alt="User avatar with soft pastel background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC-4o9gLfpsH8_IBaO5ULh3bwqvmNsD75tYCpW9LSKoqI8F91yiG7dW--YWjlxSWkJTMNyqnkN8TBivYkV71XTEAV9GqvHrg4Oh5fMAgiCtCxd_VJBSuez96EHCSEtNE94Jm_qOKK3ymI_90g-Z3Vf_wQWZPmmH5h3dmVb8yMlUeYy3r-Uw75lQr-ALgMJ3Gtd6hgc85dJciQwSTdmIsRSIt0w-oUcKyZLNVhFrYbyphXq50cKx8ws4Hvon0wwYyE7WoVoDpmY9zg");'></div>
+</div>
+</header>
+<div class="flex flex-1 justify-center py-8 px-4 md:px-8 lg:px-10 print-full-width">
+<div class="flex max-w-[1200px] flex-1 gap-8 flex-col lg:flex-row print-full-width">
+<!-- Sticky Sidebar -->
+<aside class="hidden lg:flex w-64 flex-col gap-6 sticky top-24 h-max print-hide">
+<div class="bg-surface rounded-2xl p-6 shadow-soft">
+<div class="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" data-alt="User avatar with soft pastel background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCUyRkn0uUGcVHd_V2R-2RIEwZszP7R24MNd1em9wtavIB4paCFKBA0lVPA9WeubyBY7XSlNgRPqCGfMTj1kctqpx1Chz7QdPLuGNfYrQqxijGXN0TovOcxS3uNqeDXx3mhYgR_-WDx1_CZS-nT4J5pL08umlkh9DTuBUgMHF_iVXz6OuVzGCGEJ5OaNXAa2Dgw6mZkbq5ljXdJvCD58B89BmkzC8C9CRdbBtVxOSILGVZGoNVFPT9-A9-d9iICyFT06cVKF6kZnw");'></div>
+<div class="flex flex-col">
+<h1 class="text-text-main text-lg font-bold leading-tight">Alex</h1>
+<p class="text-muted text-sm font-medium">Results Hub</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-bold transition-colors" href="#traits">
+<span class="material-symbols-outlined text-xl" data-icon="psychology" data-weight="fill" style="font-variation-settings: 'FILL' 1;">psychology</span>
+                                Big 5 Traits
+                            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 text-text-main font-semibold transition-colors" href="#strengths">
+<span class="material-symbols-outlined text-xl text-muted" data-icon="lightbulb">lightbulb</span>
+                                Cognitive Strengths
+                            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 text-text-main font-semibold transition-colors" href="#careers">
+<span class="material-symbols-outlined text-xl text-muted" data-icon="work">work</span>
+                                Top Careers
+                            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 text-text-main font-semibold transition-colors" href="#values">
+<span class="material-symbols-outlined text-xl text-muted" data-icon="favorite">favorite</span>
+                                Values
+                            </a>
+</nav>
+</div>
+<button class="flex w-full items-center justify-center gap-2 rounded-full h-14 px-6 bg-primary text-white text-base font-bold shadow-soft hover:shadow-hover hover:-translate-y-1 transition-all" onclick="window.print()">
+<span class="material-symbols-outlined" data-icon="print">print</span>
+                        Print / Export PDF
+                    </button>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col gap-10 min-w-0 print-full-width">
+<!-- Hero Section -->
+<div class="bg-surface rounded-2xl p-8 shadow-soft relative overflow-hidden">
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/10 rounded-full blur-2xl"></div>
+<div class="absolute -left-10 -bottom-10 w-40 h-40 bg-accent/10 rounded-full blur-2xl"></div>
+<div class="relative z-10">
+<p class="text-text-main text-4xl md:text-5xl font-extrabold leading-tight tracking-tight mb-4">Your Career DNA is Ready! 🎉</p>
+<p class="text-muted text-lg font-medium max-w-2xl">We've analyzed your 246 answers. Here is your personalized breakdown of traits, strengths, and perfect-match careers.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 print-full-width">
+<!-- Trait Hexagon (Big 5) -->
+<section class="bg-surface rounded-2xl p-8 shadow-soft flex flex-col items-center" id="traits">
+<h3 class="text-2xl font-bold mb-6 w-full text-left">Big 5 Personality</h3>
+<div class="relative w-full max-w-[320px] aspect-square">
+<!-- Simulated Radar Chart using SVG -->
+<svg class="w-full h-full overflow-visible" viewbox="0 0 100 100">
+<!-- Grid lines -->
+<polygon fill="none" points="50,10 90,35 75,85 25,85 10,35" stroke="#e5e7eb" stroke-width="1"></polygon>
+<polygon fill="none" points="50,25 75,43 65,75 35,75 25,43" stroke="#e5e7eb" stroke-width="1"></polygon>
+<polygon fill="none" points="50,40 60,50 55,65 45,65 40,50" stroke="#e5e7eb" stroke-width="1"></polygon>
+<!-- Axes -->
+<line stroke="#e5e7eb" stroke-width="1" x1="50" x2="50" y1="50" y2="10"></line>
+<line stroke="#e5e7eb" stroke-width="1" x1="50" x2="90" y1="50" y2="35"></line>
+<line stroke="#e5e7eb" stroke-width="1" x1="50" x2="75" y1="50" y2="85"></line>
+<line stroke="#e5e7eb" stroke-width="1" x1="50" x2="25" y1="50" y2="85"></line>
+<line stroke="#e5e7eb" stroke-width="1" x1="50" x2="10" y1="50" y2="35"></line>
+<!-- Data Polygon (Coral Primary 20% Fill) -->
+<polygon fill="rgba(251, 106, 81, 0.2)" points="50,15 80,40 60,70 30,80 15,45" stroke="#fb6a51" stroke-linejoin="round" stroke-width="2"></polygon>
+<!-- Data Points -->
+<circle cx="50" cy="15" fill="#fb6a51" r="2.5"></circle>
+<circle cx="80" cy="40" fill="#fb6a51" r="2.5"></circle>
+<circle cx="60" cy="70" fill="#fb6a51" r="2.5"></circle>
+<circle cx="30" cy="80" fill="#fb6a51" r="2.5"></circle>
+<circle cx="15" cy="45" fill="#fb6a51" r="2.5"></circle>
+</svg>
+<!-- Labels -->
+<span class="absolute -top-6 left-1/2 -translate-x-1/2 text-sm font-bold text-text-main">Openness</span>
+<span class="absolute top-1/4 -right-8 translate-x-full text-sm font-bold text-text-main text-right">Conscientiousness</span>
+<span class="absolute bottom-4 -right-4 translate-x-full text-sm font-bold text-text-main text-right">Extraversion</span>
+<span class="absolute bottom-4 -left-4 -translate-x-full text-sm font-bold text-text-main">Agreeableness</span>
+<span class="absolute top-1/4 -left-8 -translate-x-full text-sm font-bold text-text-main">Neuroticism</span>
+</div>
+</section>
+<!-- Strengths Section -->
+<section class="bg-surface rounded-2xl p-8 shadow-soft flex flex-col gap-6" id="strengths">
+<h3 class="text-2xl font-bold">Top Cognitive Strengths</h3>
+<p class="text-muted font-medium">Your natural aptitudes shine in these areas, making you a quick learner in roles requiring these skills.</p>
+<div class="flex flex-wrap gap-3 mt-2">
+<div class="px-5 py-2.5 bg-accent/10 border border-accent/20 rounded-full text-accent font-bold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-base" data-icon="extension">extension</span>
+                                    Pattern Recognition
+                                </div>
+<div class="px-5 py-2.5 bg-accent/10 border border-accent/20 rounded-full text-accent font-bold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-base" data-icon="architecture">architecture</span>
+                                    Spatial Reasoning
+                                </div>
+<div class="px-5 py-2.5 bg-accent/10 border border-accent/20 rounded-full text-accent font-bold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-base" data-icon="forum">forum</span>
+                                    Verbal Fluency
+                                </div>
+<div class="px-5 py-2.5 bg-accent/10 border border-accent/20 rounded-full text-accent font-bold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-base" data-icon="calculate">calculate</span>
+                                    Quantitative Logic
+                                </div>
+<div class="px-5 py-2.5 bg-accent/10 border border-accent/20 rounded-full text-accent font-bold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-base" data-icon="category">category</span>
+                                    Systems Thinking
+                                </div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</div>
+</div>
+<!-- Script to add a few confetti elements on load -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const colors = ['#fb6a51', '#4CB944', '#fde047', '#3b82f6'];
+            for(let i=0; i<30; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDelay = (Math.random() * 2) + 's';
+                document.body.appendChild(conf);
+                
+                // Remove after animation
+                setTimeout(() => conf.remove(), 4000);
+            }
+        });
+    </script>
+</body></html>

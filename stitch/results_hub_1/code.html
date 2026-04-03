@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Results Hub - Engaging Ed-Tech</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#fb6a51",
+          "background-light": "#f8f6f5",
+          "background-dark": "#23120f",
+        },
+        fontFamily: {
+          "display": ["Manrope", "sans-serif"]
+        },
+        borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+      },
+    },
+  }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Manrope', sans-serif; }
+    .card-shadow { box-shadow: 0 8px 24px rgba(45, 49, 66, 0.08); }
+    .hover-expand { transition: all 0.3s ease; }
+    .hover-expand:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(45, 49, 66, 0.12); }
+    .hover-expand .expandable-content { max-height: 0; opacity: 0; transition: all 0.3s ease; overflow: hidden; }
+    .hover-expand:hover .expandable-content { max-height: 200px; opacity: 1; margin-top: 1rem; }
+</style>
+</head>
+<body class="bg-background-light text-slate-800 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light group/design-root overflow-x-hidden font-display">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-4 lg:px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col w-full max-w-[1200px] flex-1">
+<!-- Shared TopAppBar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 px-4 lg:px-10 py-3 mb-6 bg-white rounded-xl shadow-sm">
+<div class="flex items-center gap-4 text-slate-900">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-slate-900 text-xl font-bold leading-tight tracking-[-0.015em]">Engaging Ed-Tech</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-slate-600 hover:text-primary transition-colors text-sm font-semibold leading-normal" href="#">Dashboard</a>
+<a class="text-slate-600 hover:text-primary transition-colors text-sm font-semibold leading-normal" href="#">Assessment Engine</a>
+<a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary py-1" href="#">Results Hub</a>
+<a class="text-slate-600 hover:text-primary transition-colors text-sm font-semibold leading-normal" href="#">Admin Dashboard</a>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary ring-offset-2" data-alt="close-up portrait of a smiling young woman with bright, welcoming natural lighting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDoMeUBPseJPeSNLRKluzZnJYOW1wrbzbLpwGAPIluxk27Ffn0QC2jJ1t4122Im1SXxZeJNfhPnO7noQfWDW4kz8Rg-byF5Rn02laLhpQNcX_r2FVuex3F775ovvSnxZs9-mcaTd2KTk52omwQifGct4qoMtLlZ-2YGFC5sSoAt8hc3PfQZ2gqwbT0UQvZxaGcUtwy_PA7i1yiG9zg251dS657t1ssyruo6D4oSaXuhfhoHj_lPAFkBvkQGU_U_2uudgu04tlqDQQ");'></div>
+</div>
+</header>
+<div class="flex flex-col lg:flex-row gap-8">
+<!-- Shared Sidebar Navigation -->
+<aside class="w-full lg:w-64 shrink-0 hidden lg:flex flex-col gap-6 sticky top-8 h-fit">
+<div class="flex flex-col gap-4">
+<div class="flex flex-col">
+<h1 class="text-slate-900 text-lg font-bold leading-normal">Navigation</h1>
+<p class="text-slate-500 text-sm font-medium leading-normal">Jump to section</p>
+</div>
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary transition-colors" href="#personality">
+<div class="material-symbols-outlined text-primary" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</div>
+<p class="text-sm font-bold leading-normal">Personality Breakdown</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors" href="#strengths">
+<div class="material-symbols-outlined" data-icon="star">star</div>
+<p class="text-sm font-semibold leading-normal">Top Strengths</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors" href="#values">
+<div class="material-symbols-outlined" data-icon="work">work</div>
+<p class="text-sm font-semibold leading-normal">Values &amp; Aptitudes</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors" href="#careers">
+<div class="material-symbols-outlined" data-icon="check_circle">check_circle</div>
+<p class="text-sm font-semibold leading-normal">Career Matches</p>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col gap-8 pb-16">
+<!-- Hero Section -->
+<div class="flex flex-wrap justify-between items-center gap-4 bg-white p-8 rounded-[2rem] card-shadow border border-slate-100 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+<div class="flex min-w-72 flex-col gap-3 z-10">
+<p class="text-slate-900 text-3xl md:text-4xl font-extrabold leading-tight tracking-[-0.033em]">Your Career DNA is Ready, Alex! 🎉</p>
+<p class="text-slate-500 text-lg font-medium leading-relaxed max-w-2xl">We've analyzed your responses across 246 questions. Here are your deeply personalized insights.</p>
+</div>
+<button class="z-10 flex cursor-pointer items-center justify-center gap-2 rounded-full h-12 px-6 bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all text-base font-bold shadow-sm">
+<span class="material-symbols-outlined text-[20px]">print</span>
+<span>Print / Export PDF</span>
+</button>
+</div>
+<!-- Grid Layout for Modules -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Personality Breakdown (Radar Chart) -->
+<section class="bg-white rounded-[2rem] p-8 card-shadow border border-slate-100 flex flex-col gap-6" id="personality">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-purple-100 text-purple-600 rounded-xl">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<h3 class="text-2xl font-bold text-slate-900">Big 5 Personality</h3>
+</div>
+<div class="relative w-full aspect-square max-w-[300px] mx-auto flex items-center justify-center">
+<!-- Decorative Radar Chart SVG Mockup -->
+<svg class="w-full h-full drop-shadow-sm" viewbox="0 0 200 200">
+<!-- Grid Web -->
+<polygon fill="none" points="100,20 180,80 150,170 50,170 20,80" stroke="#e2e8f0" stroke-width="2"></polygon>
+<polygon fill="none" points="100,40 160,90 135,155 65,155 40,90" stroke="#e2e8f0" stroke-width="2"></polygon>
+<polygon fill="none" points="100,60 140,100 120,140 80,140 60,100" stroke="#e2e8f0" stroke-width="2"></polygon>
+<polygon fill="none" points="100,80 120,110 105,125 95,125 80,110" stroke="#e2e8f0" stroke-width="2"></polygon>
+<!-- Axis Lines -->
+<line stroke="#e2e8f0" stroke-width="2" x1="100" x2="100" y1="100" y2="20"></line>
+<line stroke="#e2e8f0" stroke-width="2" x1="100" x2="180" y1="100" y2="80"></line>
+<line stroke="#e2e8f0" stroke-width="2" x1="100" x2="150" y1="100" y2="170"></line>
+<line stroke="#e2e8f0" stroke-width="2" x1="100" x2="50" y1="100" y2="170"></line>
+<line stroke="#e2e8f0" stroke-width="2" x1="100" x2="20" y1="100" y2="80"></line>
+<!-- Data Polygon -->
+<polygon fill="rgba(251, 106, 81, 0.2)" points="100,35 170,85 110,140 70,160 30,95" stroke="#fb6a51" stroke-linejoin="round" stroke-width="3"></polygon>
+<!-- Labels -->
+<text class="text-[10px] fill-slate-500 font-bold" text-anchor="middle" x="100" y="12">Openness</text>
+<text class="text-[10px] fill-slate-500 font-bold" text-anchor="end" x="195" y="85">Conscientiousness</text>
+<text class="text-[10px] fill-slate-500 font-bold" text-anchor="end" x="160" y="185">Extroversion</text>
+<text class="text-[10px] fill-slate-500 font-bold" text-anchor="start" x="40" y="185">Agreeableness</text>
+<text class="text-[10px] fill-slate-500 font-bold" text-anchor="start" x="5" y="85">Neuroticism</text>
+</svg>
+</div>
+<p class="text-slate-600 text-sm leading-relaxed text-center">Your profile suggests high openness and conscientiousness, pointing towards creative problem-solving roles.</p>
+</section>
+<!-- Top Strengths -->
+<section class="bg-white rounded-[2rem] p-8 card-shadow border border-slate-100 flex flex-col gap-6" id="strengths">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-green-100 text-green-600 rounded-xl">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<h3 class="text-2xl font-bold text-slate-900">Cognitive Strengths</h3>
+</div>
+<p class="text-slate-500 text-sm leading-relaxed">These are your standout cognitive aptitudes compared to the general population baseline.</p>
+<div class="flex flex-wrap gap-3 mt-2">
+<div class="flex items-center gap-2 bg-green-500 text-white px-5 py-2.5 rounded-full shadow-sm">
+<span class="font-bold text-sm">Analytical Thinking</span>
+<span class="text-lg">🧠</span>
+</div>
+<div class="flex items-center gap-2 bg-green-500 text-white px-5 py-2.5 rounded-full shadow-sm">
+<span class="font-bold text-sm">Empathy &amp; EQ</span>
+<span class="text-lg">🤝</span>
+</div>
+<div class="flex items-center gap-2 bg-green-500 text-white px-5 py-2.5 rounded-full shadow-sm">
+<span class="font-bold text-sm">Pattern Recognition</span>
+<span class="text-lg">🧩</span>
+</div>
+<div class="flex items-center gap-2 bg-green-500 text-white px-5 py-2.5 rounded-full shadow-sm">
+<span class="font-bold text-sm">Adaptability</span>
+<span class="text-lg">🌊</span>
+</div>
+<div class="flex items-center gap-2 bg-slate-100 text-slate-700 px-5 py-2.5 rounded-full border border-slate-200">
+<span class="font-bold text-sm">Verbal Reasoning</span>
+</div>
+</div>
+</section>
+<!-- Career Matches (Full Width in Grid) -->
+<section class="md:col-span-2 flex flex-col gap-6 mt-4" id="careers">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-blue-100 text-blue-600 rounded-xl">
+<span class="material-symbols-outlined">rocket_launch</span>
+</div>
+<h3 class="text-3xl font-extrabold text-slate-900">Top Career Matches</h3>
+</div>
+<span class="text-slate-500 text-sm font-semibold bg-slate-100 px-4 py-1 rounded-full">Based on RIASEC + Big 5</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Match Card 1 -->
+<article class="hover-expand bg-white rounded-[2rem] p-6 border border-slate-100 relative cursor-pointer group flex flex-col h-full shadow-sm">
+<div class="absolute top-6 right-6 bg-green-100 text-green-700 font-extrabold text-sm px-3 py-1 rounded-full border border-green-200 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+                                            94% Match
+                                        </div>
+<div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl mb-4">
+                                            💻
+                                        </div>
+<h4 class="text-xl font-bold text-slate-900 mb-2">UX/UI Designer</h4>
+<p class="text-slate-500 text-sm font-medium mb-4">Combines your high empathy (understanding users) with creative problem-solving.</p>
+<ul class="flex flex-col gap-2 mt-auto">
+<li class="flex items-start gap-2 text-sm text-slate-600">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+                                                Fits your desire for autonomy
+                                            </li>
+<li class="flex items-start gap-2 text-sm text-slate-600">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+                                                Leverages pattern recognition
+                                            </li>
+</ul>
+<!-- Hidden Expanded Content -->
+<div class="expandable-content border-t border-slate-100 pt-4 mt-4">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Avg. Salary</span>
+<span class="text-sm font-bold text-slate-800">$85k - $130k</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Growth</span>
+<span class="text-sm font-bold text-green-600 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">trending_up</span> High</span>
+</div>
+</div>
+</article>
+<!-- Match Card 2 -->
+<article class="hover-expand bg-white rounded-[2rem] p-6 border border-slate-100 relative cursor-pointer group flex flex-col h-full shadow-sm">
+<div class="absolute top-6 right-6 bg-green-50 text-green-600 font-extrabold text-sm px-3 py-1 rounded-full border border-green-200">
+                                            89% Match
+                                        </div>
+<div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-3xl mb-4">
+                                            📊
+                                        </div>
+<h4 class="text-xl font-bold text-slate-900 mb-2">Product Manager</h4>
+<p class="text-slate-500 text-sm font-medium mb-4">Perfect for your analytical thinking and high organizational conscientiousness.</p>
+<ul class="flex flex-col gap-2 mt-auto">
+<li class="flex items-start gap-2 text-sm text-slate-600">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+                                                Leadership without micromanaging
+                                            </li>
+<li class="flex items-start gap-2 text-sm text-slate-600">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+                                                Strategic planning alignment
+                                            </li>
+</ul>
+<!-- Hidden Expanded Content -->
+<div class="expandable-content border-t border-slate-100 pt-4 mt-4">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Avg. Salary</span>
+<span class="text-sm font-bold text-slate-800">$100k - $150k</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Growth</span>
+<span class="text-sm font-bold text-green-600 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">trending_up</span> Very High</span>
+</div>
+</div>
+</article>
+<!-- Match Card 3 -->
+<article class="hover-expand bg-white rounded-[2rem] p-6 border border-slate-100 relative cursor-pointer group flex flex-col h-full shadow-sm">
+<div class="absolute top-6 right-6 bg-slate-100 text-slate-600 font-extrabold text-sm px-3 py-1 rounded-full border border-slate-200">
+                                            82% Match
+                                        </div>
+<div class="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center text-3xl mb-4">
+                                            🌿
+                                        </div>
+<h4 class="text-xl font-bold text-slate-900 mb-2">Technical Writer</h4>
+<p class="text-slate-500 text-sm font-medium mb-4">Utilizes your strong verbal reasoning to translate complex concepts simply.</p>
+<ul class="flex flex-col gap-2 mt-auto">
+<li class="flex items-start gap-2 text-sm text-slate-600">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+                                                Independent work environment
+                                            </li>
+<li class="flex items-start gap-2 text-sm text-slate-600">
+<span class="material-symbols-outlined text-primary text-[18px]">check</span>
+                                                High detail orientation needed
+                                            </li>
+</ul>
+<!-- Hidden Expanded Content -->
+<div class="expandable-content border-t border-slate-100 pt-4 mt-4">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Avg. Salary</span>
+<span class="text-sm font-bold text-slate-800">$70k - $105k</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Growth</span>
+<span class="text-sm font-bold text-slate-500 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">trending_flat</span> Stable</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+</div>
+</main>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

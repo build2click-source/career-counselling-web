@@ -1,120 +1,151 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
 
-interface AttemptRecord {
-    id: string;
-    isCompleted: boolean;
-    createdAt: string;
-    examId: string;
-    exam: { title: string };
-    user: { id: string; email: string };
-    responses: { marksObtained: number; question: { marks: number } }[];
+interface Candidate {
+  id: string;
+  email: string;
+  status: string;
+  topMatch: string;
+  lastActive: string;
 }
 
-export default function AdminDashboard() {
-    const { data: session, status } = useSession();
-    const router = useRouter();
-    const [attempts, setAttempts] = useState<AttemptRecord[]>([]);
-    const [loading, setLoading] = useState(true);
+interface Stats {
+  totalStudents: number;
+  completedAttempts: number;
+  inProgressAttempts: number;
+  candidates: Candidate[];
+}
 
-    useEffect(() => {
-        if (status === "unauthenticated") {
-            router.push("/login");
-        } else if (status === "authenticated") {
-            if (session.user.role !== "ADMIN") {
-                router.push("/dashboard");
-            } else {
-                fetchAdminAttempts();
-            }
-        }
-    }, [status, router, session]);
+const STATUS_STYLE: Record<string, string> = {
+  Completed: "bg-[#4CB944]/10 text-[#4CB944]",
+  "Not Started": "bg-gray-100 text-gray-500",
+};
 
-    const fetchAdminAttempts = async () => {
-        try {
-            const res = await fetch('/api/admin/attempts');
-            if (res.ok) {
-                const data = await res.json();
-                setAttempts(data);
-            }
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
+function getStatusStyle(status: string) {
+  if (status.includes("Completed")) return STATUS_STYLE["Completed"];
+  if (status.includes("Progress")) return "bg-[#fb6a51]/10 text-[#fb6a51]";
+  return STATUS_STYLE["Not Started"];
+}
 
-    if (loading) return <div className="container" style={{ padding: '4rem 0' }}>Loading admin dashboard...</div>;
+export default function AdminDashboardPage() {
+  const { data: session, status: authStatus } = useSession();
+  const router = useRouter();
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
 
-    // Group attempts by user
-    const attemptsByUser = attempts.reduce((acc, attempt) => {
-        if (!acc[attempt.user.email]) {
-            acc[attempt.user.email] = [];
-        }
-        acc[attempt.user.email].push(attempt);
-        return acc;
-    }, {} as Record<string, AttemptRecord[]>);
+  useEffect(() => {
+    if (authStatus === "unauthenticated") { router.push("/login"); return; }
+    if (authStatus !== "authenticated") return;
+    if ((session?.user as any)?.role !== "ADMIN") { router.push("/dashboard"); return; }
 
+    fetch("/api/admin/stats")
+      .then((r) => r.json())
+      .then((data) => { setStats(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [authStatus, session, router]);
+
+  if (authStatus === "loading" || loading) {
     return (
-        <div className="container" style={{ padding: '3rem 0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
-                <div>
-                    <h1 style={{ marginBottom: '0.5rem' }}>Admin Dashboard</h1>
-                    <p>Teacher interface for managing exams and reviewing students.</p>
-                </div>
-                <Link href="/admin/exams/create" className="btn btn-primary">➕ Create New Exam</Link>
-            </div>
-
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Student Submissions</h2>
-
-            {Object.keys(attemptsByUser).length === 0 ? (
-                <div className="glass-card" style={{ textAlign: 'center', padding: '3rem' }}>
-                    <p>No student attempts recorded yet.</p>
-                </div>
-            ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                    {Object.entries(attemptsByUser).map(([userEmail, userAttempts]) => (
-                        <div key={userEmail} className="glass-card">
-                            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '0.5rem' }}>
-                                👤 {userEmail}
-                                <span style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginLeft: '1rem', fontWeight: 'normal' }}>
-                                    ({userAttempts.length} attempts)
-                                </span>
-                            </h3>
-
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                                {userAttempts.map(att => {
-                                    // Calculate simplified score (since the basic API for admin didn't aggressively deep fetch Question marks, we just show raw obtained for this view)
-                                    const score = att.responses.reduce((sum, r) => sum + r.marksObtained, 0);
-
-                                    return (
-                                        <div key={att.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(0,0,0,0.02)', borderRadius: 'var(--radius-sm)' }}>
-                                            <div>
-                                                <div style={{ fontWeight: '600' }}>{att.exam.title}</div>
-                                                <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>{new Date(att.createdAt).toLocaleString()}</div>
-                                            </div>
-
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-                                                <div className={`badge ${att.isCompleted ? 'badge-success' : 'badge-warning'}`}>
-                                                    {att.isCompleted ? `Score: ${score}` : 'In Progress'}
-                                                </div>
-                                                {att.isCompleted && (
-                                                    <Link href={`/admin/users/${att.id}`} className="btn btn-secondary" style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem' }}>
-                                                        Full Review
-                                                    </Link>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+      <div className="min-h-screen bg-[#F4F7F6] flex items-center justify-center">
+        <div className="text-slate-400 text-lg font-medium animate-pulse">Loading admin panel…</div>
+      </div>
     );
+  }
+
+  if (!stats) {
+    return (
+      <div className="min-h-screen bg-[#F4F7F6] flex items-center justify-center">
+        <div className="text-slate-500">Failed to load admin data.</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-[#F4F7F6] text-[#2D3142] min-h-screen font-sans">
+      <div className="w-full max-w-[1100px] mx-auto px-6 pb-20">
+
+        {/* ─── Tab Nav ─── */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-6 pb-8">
+          <Link
+            href="/admin"
+            className="px-5 py-2.5 rounded-full bg-[#fb6a51] text-white text-sm font-bold shadow-sm text-center"
+          >
+            Overview
+          </Link>
+          <Link
+            href="/admin/assessments"
+            className="px-5 py-2.5 rounded-full bg-white text-slate-600 text-sm font-bold border border-slate-200 hover:border-[#fb6a51] hover:text-[#fb6a51] transition-all text-center"
+          >
+            Manage Assessments
+          </Link>
+          <Link
+            href="/admin/profiles"
+            className="px-5 py-2.5 rounded-full bg-white text-slate-600 text-sm font-bold border border-slate-200 hover:border-[#fb6a51] hover:text-[#fb6a51] transition-all text-center"
+          >
+            Occupational Profiles
+          </Link>
+        </div>
+
+        {/* ─── Metric Cards ─── */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-10">
+          <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-1 md:gap-2">
+            <span className="text-[10px] md:text-xs font-bold text-[#9095A7] uppercase tracking-wider">Total Students</span>
+            <span className="text-3xl md:text-4xl font-extrabold text-[#fb6a51]">{stats.totalStudents}</span>
+          </div>
+          <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-1 md:gap-2">
+            <span className="text-[10px] md:text-xs font-bold text-[#9095A7] uppercase tracking-wider">Completed</span>
+            <span className="text-3xl md:text-4xl font-extrabold text-[#4CB944]">{stats.completedAttempts}</span>
+          </div>
+          <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-1 md:gap-2">
+            <span className="text-[10px] md:text-xs font-bold text-[#9095A7] uppercase tracking-wider">In Progress</span>
+            <span className="text-3xl md:text-4xl font-extrabold text-[#f97316]">{stats.inProgressAttempts}</span>
+          </div>
+        </section>
+
+        {/* ─── Candidates Table ─── */}
+        <section className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
+          <h3 className="text-2xl font-bold text-[#2D3142] mb-6">Recent Candidates</h3>
+          {stats.candidates.length === 0 ? (
+            <p className="text-slate-400 text-center py-8">No students registered yet.</p>
+          ) : (
+            <div className="overflow-x-auto w-full">
+              <table className="w-full min-w-[600px] text-left border-collapse">
+                <thead>
+                  <tr className="border-b-2 border-[#f4e8e6] text-[#9095A7] text-sm uppercase tracking-wider">
+                    <th className="pb-3 font-semibold">Candidate</th>
+                    <th className="pb-3 font-semibold">Status</th>
+                    <th className="pb-3 font-semibold">Top Match</th>
+                    <th className="pb-3 font-semibold">Last Active</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stats.candidates.map((c) => (
+                    <tr key={c.id} className="border-b border-[#f4e8e6] hover:bg-[#f8f6f5] transition-colors">
+                      <td className="py-4">
+                        <span className="font-bold text-[#2D3142]">{c.email}</span>
+                      </td>
+                      <td className="py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusStyle(c.status)}`}>
+                          {c.status}
+                        </span>
+                      </td>
+                      <td className="py-4 font-medium text-[#2D3142]">{c.topMatch}</td>
+                      <td className="py-4 text-[#9095A7] text-sm">
+                        {formatDistanceToNow(new Date(c.lastActive), { addSuffix: true })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </div>
+    </div>
+  );
 }

@@ -23,79 +23,95 @@ enum Role {
   ADMIN
 }
 
-model Exam {
-  id               String    @id @default(uuid())
+model Assessment {
+  id               String       @id @default(uuid())
   title            String
   description      String?
   timeLimitMinutes Int
-  sections         Section[]
+  modules          AssessmentModule[]
   attempts         Attempt[]
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 }
 
-model Section {
-  id             String          @id @default(uuid())
-  examId         String
-  title          String
-  order          Int
-  exam           Exam            @relation(fields: [examId], references: [id], onDelete: Cascade)
-  questionGroups QuestionGroup[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-}
-
-model QuestionGroup {
-  id         String     @id @default(uuid())
-  sectionId  String
-  type       String     // e.g., "Multiple Choice", "Fill in the blanks"
-  context    String?    // The reading passage or instructions
-  audioUrl   String?
-  imageUrl   String?
-  section    Section    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  questions  Question[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+model AssessmentModule {
+  id           String        @id @default(uuid())
+  assessmentId String
+  title        String        // e.g., "Personality Inventory", "Occupational Interests"
+  type         String        // e.g., "FFM", "RIASEC", "Cognitive", "Values", "VARK"
+  order        Int
+  assessment   Assessment    @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  questions    Question[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Question {
-  id            String        @id @default(uuid())
-  groupId       String
-  text          String
-  options       String        // Stored as JSON string
-  correctAnswer String
-  marks         Float         @default(1.0)
-  audioUrl      String?
-  imageUrl      String?
-  group         QuestionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  responses     Response[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id               String            @id @default(uuid())
+  moduleId         String
+  text             String
+  traitDimension   String?           // e.g., "Extraversion", "Numerical Reasoning"
+  scoringPolarity  String?           // "Positive (+)", "Negative (-)", null if N/A
+  options          String            // JSON string array
+  correctAnswer    String?           // For cognitive aptitude/SJTs
+  marks            Float             @default(1.0)
+  isArchived       Boolean           @default(false)
+  module           AssessmentModule  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  responses        Response[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model OccupationalProfile {
+  id               String   @id @default(uuid())
+  title            String   @unique // O*NET Title e.g., Software Engineer
+  description      String
+  targetVector     String   // JSON representing ideal multidimensional score (Big5 + RIASEC + Cognitive)
+  fitmentScores    FitmentScore[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model Attempt {
-  id          String     @id @default(uuid())
-  userId      String
-  examId      String
-  startTime   DateTime   @default(now())
-  endTime     DateTime?
-  isCompleted Boolean    @default(false)
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exam        Exam       @relation(fields: [examId], references: [id], onDelete: Cascade)
-  responses   Response[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id             String         @id @default(uuid())
+  userId         String
+  assessmentId   String
+  startTime      DateTime       @default(now())
+  endTime        DateTime?
+  sessionExpiry  DateTime       // 5-day validity window
+  isCompleted    Boolean        @default(false)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessment     Assessment     @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  responses      Response[]
+  fitmentScores  FitmentScore[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
 model Response {
   id            String   @id @default(uuid())
   attemptId     String
   questionId    String
-  answerText    String
-  isCorrect     Boolean
-  marksObtained Float    @default(0)
+  answerText    String   // Direct text/choice
+  scoreValue    Float?   // E.g., Likert 1-5, or binary 1/0 for aptitude
+  isCorrect     Boolean? // Null for personality/interests
   attempt       Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
   question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@unique([attemptId, questionId])
+}
+
+model FitmentScore {
+  id                    String              @id @default(uuid())
+  attemptId             String
+  occupationalProfileId String
+  euclideanDistance     Float               // Mathematical distance from ideal profile
+  fitmentPercentage     Float               // Converted scaled score 0-100
+  matchedTags           String              // JSON array of strong attribute matches
+  attempt               Attempt             @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  occupationalProfile   OccupationalProfile @relation(fields: [occupationalProfileId], references: [id], onDelete: Cascade)
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
 }

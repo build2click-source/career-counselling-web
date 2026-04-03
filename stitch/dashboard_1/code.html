@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Engaging Ed-Tech - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#fb6a51",
+                        "background-light": "#f8f6f5",
+                        "background-dark": "#23120f",
+                        "text-main": "#2D3142",
+                        "text-muted": "#9095A7",
+                        "accent-green": "#4CB944",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "sans": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                    boxShadow: {
+                        'soft': '0 8px 24px rgba(45, 49, 66, 0.08)',
+                        'soft-hover': '0 12px 32px rgba(45, 49, 66, 0.12)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #F4F7F6;
+        }
+        .module-card {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(45, 49, 66, 0.12);
+        }
+    </style>
+</head>
+<body class="text-text-main min-h-screen flex flex-col items-center">
+<!-- Shared TopNavBar -->
+<div class="w-full flex-col group/design-root overflow-x-hidden">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e2e8f0] bg-white px-10 py-3 w-full max-w-[1200px] mx-auto rounded-b-xl shadow-sm mb-8">
+<div class="flex items-center gap-4 text-text-main">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Career DNA</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8 items-center">
+<span class="material-symbols-outlined text-text-muted hover:text-primary cursor-pointer transition-colors" data-icon="settings">settings</span>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 shadow-sm border border-white" data-alt="close up portrait of a young man with a slight smile, clean background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBQA4FPji7dzgpho-bje360KPL3JBBj0x8pQHHfUFbwuFzy6Mz3VUnY0FhjhSXHfZFwkuishbrg8X2h8O8Pdj_213KEKHZC6m8qQ1shQ3ACBc4JyL6OMFgQmVEuS8Kasu4heBW49AZgWvYz5XIzhXND3LvUvi7blc0LU_bThWnTgAio4ciHVCntyeg7tmsTEnVy_ACqWHwf5n9_OKzC7A0vhaIMj8-futExXwZ4z-abDMLiFCMFBim7X_xolXFSl3PRfSuBemakPA");'></div>
+</div>
+</header>
+</div>
+<!-- Main Content Container -->
+<main class="w-full max-w-[800px] px-6 pb-20 flex flex-col gap-10">
+<!-- Welcome & Global Progress Section -->
+<section class="flex flex-col md:flex-row items-center justify-between gap-8 bg-white p-8 rounded-[2.5rem] shadow-soft">
+<div class="flex flex-col gap-3 max-w-md">
+<h1 class="text-4xl font-extrabold leading-tight tracking-tight text-text-main">Ready to discover your path, Alex?</h1>
+<p class="text-lg font-medium text-text-muted">Your career DNA journey</p>
+</div>
+<!-- Circular Progress Ring -->
+<div class="relative flex items-center justify-center size-40 shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#F4F7F6" stroke-width="8"></circle>
+<!-- 45% completion = roughly 113 stroke-dasharray (2 * pi * r * 0.45 = 251.2 * 0.45) -->
+<circle class="transition-all duration-1000 ease-out" cx="50" cy="50" fill="transparent" r="40" stroke="#4CB944" stroke-dasharray="251.2" stroke-dashoffset="138.16" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center justify-center">
+<span class="text-3xl font-extrabold text-text-main">45%</span>
+<span class="text-xs font-semibold text-text-muted uppercase tracking-wider">Complete</span>
+</div>
+</div>
+</section>
+<!-- Modules Stack -->
+<section class="flex flex-col gap-5">
+<!-- Module 1: Completed -->
+<div class="module-card bg-white rounded-full p-6 flex items-center gap-6 shadow-sm border border-transparent opacity-70">
+<div class="size-16 rounded-full bg-background-light flex items-center justify-center text-3xl shrink-0">
+                    🧠
+                </div>
+<div class="flex-1 flex flex-col gap-2">
+<h3 class="text-xl font-bold text-text-main">Big 5 Personality</h3>
+<div class="flex items-center gap-3">
+<div class="flex-1 h-2 rounded-full bg-background-light overflow-hidden">
+<div class="h-full bg-accent-green w-full rounded-full"></div>
+</div>
+<span class="text-sm font-bold text-accent-green">100%</span>
+</div>
+</div>
+<div class="shrink-0 px-6 py-3 rounded-full bg-background-light text-text-muted font-bold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span>
+                    Done
+                </div>
+</div>
+<!-- Module 2: In Progress (Active) -->
+<div class="module-card bg-white rounded-[2rem] p-6 flex flex-col gap-4 shadow-soft border-2 border-primary/20 relative overflow-hidden">
+<div class="flex items-center gap-6">
+<div class="size-16 rounded-full bg-primary/10 flex items-center justify-center text-3xl shrink-0">
+                        🎯
+                    </div>
+<div class="flex-1">
+<h3 class="text-xl font-bold text-text-main mb-1">RIASEC Interests</h3>
+<p class="text-sm text-text-muted font-medium">Discover what drives you.</p>
+</div>
+<button class="shrink-0 px-8 py-3 rounded-full bg-primary text-white font-bold text-base shadow-md hover:bg-[#e55b44] transition-colors focus:ring-4 focus:ring-primary/30">
+                        Resume
+                    </button>
+</div>
+<div class="px-2">
+<div class="flex items-center gap-3">
+<div class="flex-1 h-3 rounded-full bg-background-light overflow-hidden">
+<div class="h-full bg-primary w-[60%] rounded-full relative">
+<div class="absolute inset-0 bg-white/20" style="background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent); background-size: 1rem 1rem;"></div>
+</div>
+</div>
+<span class="text-sm font-bold text-primary">60%</span>
+</div>
+</div>
+</div>
+<!-- Module 3: Not Started -->
+<div class="module-card bg-white rounded-full p-6 flex items-center gap-6 shadow-sm border border-transparent">
+<div class="size-16 rounded-full bg-background-light flex items-center justify-center text-3xl shrink-0 grayscale opacity-80">
+                    🧩
+                </div>
+<div class="flex-1 flex flex-col gap-2">
+<h3 class="text-xl font-bold text-text-main">Cognitive Aptitude</h3>
+<div class="flex items-center gap-3">
+<div class="flex-1 h-2 rounded-full bg-background-light overflow-hidden">
+<div class="h-full bg-primary w-0 rounded-full"></div>
+</div>
+<span class="text-sm font-bold text-text-muted">0%</span>
+</div>
+</div>
+<button class="shrink-0 px-8 py-3 rounded-full bg-white border-2 border-primary text-primary font-bold text-base hover:bg-primary/5 transition-colors focus:ring-4 focus:ring-primary/20">
+                    Start
+                </button>
+</div>
+<!-- Module 4: Not Started -->
+<div class="module-card bg-white rounded-full p-6 flex items-center gap-6 shadow-sm border border-transparent">
+<div class="size-16 rounded-full bg-background-light flex items-center justify-center text-3xl shrink-0 grayscale opacity-80">
+                    ✨
+                </div>
+<div class="flex-1 flex flex-col gap-2">
+<h3 class="text-xl font-bold text-text-main">Core Values</h3>
+<div class="flex items-center gap-3">
+<div class="flex-1 h-2 rounded-full bg-background-light overflow-hidden">
+<div class="h-full bg-primary w-0 rounded-full"></div>
+</div>
+<span class="text-sm font-bold text-text-muted">0%</span>
+</div>
+</div>
+<button class="shrink-0 px-8 py-3 rounded-full bg-white border-2 border-primary text-primary font-bold text-base hover:bg-primary/5 transition-colors focus:ring-4 focus:ring-primary/20">
+                    Start
+                </button>
+</div>
+<!-- Module 5: Not Started -->
+<div class="module-card bg-white rounded-full p-6 flex items-center gap-6 shadow-sm border border-transparent">
+<div class="size-16 rounded-full bg-background-light flex items-center justify-center text-3xl shrink-0 grayscale opacity-80">
+                    🧭
+                </div>
+<div class="flex-1 flex flex-col gap-2">
+<h3 class="text-xl font-bold text-text-main">Situational Judgment</h3>
+<div class="flex items-center gap-3">
+<div class="flex-1 h-2 rounded-full bg-background-light overflow-hidden">
+<div class="h-full bg-primary w-0 rounded-full"></div>
+</div>
+<span class="text-sm font-bold text-text-muted">0%</span>
+</div>
+</div>
+<button class="shrink-0 px-8 py-3 rounded-full bg-white border-2 border-primary text-primary font-bold text-base hover:bg-primary/5 transition-colors focus:ring-4 focus:ring-primary/20">
+                    Start
+                </button>
+</div>
+</section>
+</main>
+</body></html>

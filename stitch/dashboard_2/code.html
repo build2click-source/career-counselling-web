@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard - Engaging Ed-Tech</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#fb6a51",
+          "background-light": "#f8f6f5",
+          "background-dark": "#23120f",
+          "accent": "#4CB944",
+          "surface": "#FFFFFF",
+          "text-main": "#2D3142",
+          "muted": "#9095A7",
+          "bg-mint": "#F4F7F6"
+        },
+        fontFamily: {
+          "display": ["Manrope", "sans-serif"]
+        },
+        borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+        boxShadow: {
+          'soft': '0 8px 24px rgba(45, 49, 66, 0.08)',
+          'hover': '0 12px 32px rgba(45, 49, 66, 0.12)',
+        }
+      },
+    },
+  }
+</script>
+<style>
+  body {
+    font-family: 'Manrope', sans-serif;
+    background-color: #F4F7F6;
+    color: #2D3142;
+  }
+  
+  .module-card {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .module-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(45, 49, 66, 0.12);
+  }
+  
+  .action-btn {
+    transition: transform 0.1s ease-in-out;
+  }
+  
+  .action-btn:active {
+    transform: scale(0.98);
+  }
+</style>
+</head>
+<body class="min-h-screen bg-bg-mint flex flex-col items-center py-12 px-4">
+<!-- Main Navigation Excluded based on Hierarchy of Focus: Destination screen but we are instructed to generate ONLY the Dashboard content in a focused 800px container, and the provided shared components don't include a standard nav that fits this ed-tech PRD perfectly without altering structure. We will focus on the dashboard content. -->
+<div class="w-full max-w-[800px] flex flex-col gap-8">
+<!-- Shared Component: PageHeading adapted for layout but keeping exact literal strings if using icons -->
+<div class="flex flex-col gap-6">
+<div class="flex flex-wrap justify-between items-center gap-4">
+<h1 class="text-text-main text-4xl md:text-5xl font-extrabold leading-tight tracking-[-0.033em]">
+        Ready to discover your path, Alex?
+      </h1>
+<!-- Global Progress Ring -->
+<div class="relative w-24 h-24 flex items-center justify-center shrink-0 bg-surface rounded-full shadow-soft">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="40" stroke="#f0f0f0" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="none" r="40" stroke="#4CB944" stroke-dasharray="251.2" stroke-dashoffset="138.16" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center justify-center">
+<span class="text-lg font-bold text-text-main">45%</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2 items-center">
+<span class="text-muted font-medium">110 / 246 questions completed</span>
+</div>
+</div>
+<!-- Modules List -->
+<div class="flex flex-col gap-5">
+<!-- Module 1: Resume -->
+<div class="module-card bg-surface w-full h-[120px] rounded-full shadow-soft flex items-center px-8 relative overflow-hidden group">
+<div class="flex items-center gap-6 w-full z-10">
+<div class="text-4xl shrink-0">🧠</div>
+<div class="flex flex-col flex-grow">
+<h2 class="text-text-main text-xl font-bold">Personality (Big 5)</h2>
+<p class="text-muted text-sm font-medium">Understand your core traits.</p>
+</div>
+<div class="shrink-0 flex items-center gap-4">
+<div class="text-right hidden sm:block">
+<span class="text-text-main font-bold text-sm">50 / 60</span>
+</div>
+<button class="action-btn bg-primary text-surface font-semibold py-3 px-6 rounded-full hover:bg-orange-500">
+            Resume
+          </button>
+</div>
+</div>
+<!-- Mini Progress Bar -->
+<div class="absolute bottom-0 left-0 h-1.5 bg-gray-100 w-full">
+<div class="h-full bg-primary" style="width: 83%;"></div>
+</div>
+</div>
+<!-- Module 2: Start -->
+<div class="module-card bg-surface w-full h-[120px] rounded-full shadow-soft flex items-center px-8 relative overflow-hidden group">
+<div class="flex items-center gap-6 w-full z-10">
+<div class="text-4xl shrink-0">🧭</div>
+<div class="flex flex-col flex-grow">
+<h2 class="text-text-main text-xl font-bold">Interests (RIASEC)</h2>
+<p class="text-muted text-sm font-medium">Find what drives you.</p>
+</div>
+<div class="shrink-0 flex items-center gap-4">
+<div class="text-right hidden sm:block opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="text-muted font-medium text-sm">0 / 42</span>
+</div>
+<button class="action-btn bg-surface text-primary border-2 border-primary font-semibold py-2.5 px-6 rounded-full hover:bg-orange-50">
+            Start
+          </button>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 h-1.5 bg-gray-100 w-full">
+<div class="h-full bg-primary" style="width: 0%;"></div>
+</div>
+</div>
+<!-- Module 3: Start -->
+<div class="module-card bg-surface w-full h-[120px] rounded-full shadow-soft flex items-center px-8 relative overflow-hidden group">
+<div class="flex items-center gap-6 w-full z-10">
+<div class="text-4xl shrink-0">🧩</div>
+<div class="flex flex-col flex-grow">
+<h2 class="text-text-main text-xl font-bold">Cognitive</h2>
+<p class="text-muted text-sm font-medium">Discover your problem-solving style.</p>
+</div>
+<div class="shrink-0 flex items-center gap-4">
+<button class="action-btn bg-surface text-primary border-2 border-primary font-semibold py-2.5 px-6 rounded-full hover:bg-orange-50">
+            Start
+          </button>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 h-1.5 bg-gray-100 w-full"></div>
+</div>
+<!-- Module 4: Start -->
+<div class="module-card bg-surface w-full h-[120px] rounded-full shadow-soft flex items-center px-8 relative overflow-hidden group">
+<div class="flex items-center gap-6 w-full z-10">
+<div class="text-4xl shrink-0">❤️</div>
+<div class="flex flex-col flex-grow">
+<h2 class="text-text-main text-xl font-bold">Values</h2>
+<p class="text-muted text-sm font-medium">Align your career with your beliefs.</p>
+</div>
+<div class="shrink-0 flex items-center gap-4">
+<button class="action-btn bg-surface text-primary border-2 border-primary font-semibold py-2.5 px-6 rounded-full hover:bg-orange-50">
+            Start
+          </button>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 h-1.5 bg-gray-100 w-full"></div>
+</div>
+<!-- Module 5: Start -->
+<div class="module-card bg-surface w-full h-[120px] rounded-full shadow-soft flex items-center px-8 relative overflow-hidden group">
+<div class="flex items-center gap-6 w-full z-10">
+<div class="text-4xl shrink-0">⚖️</div>
+<div class="flex flex-col flex-grow">
+<h2 class="text-text-main text-xl font-bold">Judgment (SJT)</h2>
+<p class="text-muted text-sm font-medium">Navigate real-world scenarios.</p>
+</div>
+<div class="shrink-0 flex items-center gap-4">
+<button class="action-btn bg-surface text-primary border-2 border-primary font-semibold py-2.5 px-6 rounded-full hover:bg-orange-50">
+            Start
+          </button>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 h-1.5 bg-gray-100 w-full"></div>
+</div>
+</div>
+</div>
+</body></html>

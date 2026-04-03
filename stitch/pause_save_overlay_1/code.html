@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pause &amp; Save - Engaging Ed-Tech</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#fb6a51",
+            "background-light": "#f8f6f5",
+            "background-dark": "#23120f",
+            "surface": "#ffffff",
+            "text-main": "#2d3142",
+            "text-muted": "#9095a7",
+            "accent": "#4cb944",
+            "backdrop": "rgba(45, 49, 66, 0.6)"
+          },
+          fontFamily: {
+            "display": ["Manrope", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "1rem", 
+            "lg": "1.5rem", 
+            "xl": "2rem", 
+            "2xl": "1.5rem", /* 24px for cards */
+            "full": "9999px"
+          },
+          boxShadow: {
+            "soft": "0 8px 24px rgba(45, 49, 66, 0.08)"
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="font-display bg-background-light antialiased min-h-screen relative overflow-hidden">
+<!-- Background content simulation (Assessment Engine behind the modal) -->
+<div class="h-full w-full flex flex-col items-center justify-center p-8 opacity-50 blur-sm pointer-events-none">
+<div class="w-full max-w-[600px] bg-surface rounded-2xl shadow-soft p-8 text-center border border-gray-100">
+<h2 class="text-2xl font-bold text-text-main mb-8">I enjoy solving complex problems</h2>
+<div class="flex justify-between items-center px-4">
+<div class="w-16 h-16 rounded-full border-2 border-text-muted flex items-center justify-center text-3xl">😞</div>
+<div class="w-16 h-16 rounded-full border-2 border-text-muted flex items-center justify-center text-3xl">🙁</div>
+<div class="w-16 h-16 rounded-full border-2 border-text-muted flex items-center justify-center text-3xl">😐</div>
+<div class="w-16 h-16 rounded-full border-2 border-text-muted flex items-center justify-center text-3xl">🙂</div>
+<div class="w-16 h-16 rounded-full border-2 border-text-muted flex items-center justify-center text-3xl">🤩</div>
+</div>
+</div>
+</div>
+<!-- Pause & Save Overlay -->
+<div aria-describedby="modal-desc" aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-backdrop backdrop-blur-sm" role="dialog">
+<!-- Modal Container -->
+<div class="w-full max-w-[400px] bg-surface rounded-2xl shadow-soft p-8 transform transition-all duration-300 scale-100 opacity-100 flex flex-col items-center relative">
+<!-- Visual Anchor -->
+<div class="text-[64px] leading-none mb-4 animate-bounce" style="animation-duration: 2s; animation-iteration-count: 1;">
+        🏕️
+      </div>
+<!-- Content -->
+<h2 class="text-text-main text-2xl font-bold leading-tight tracking-tight text-center mb-3" id="modal-title">
+        Time for a breather?
+      </h2>
+<p class="text-text-main text-base font-medium leading-relaxed text-center mb-8 px-2" id="modal-desc">
+        Your progress is automatically saved. Take a break and pick up exactly where you left off later.
+      </p>
+<!-- Error State (Hidden by default, shown here for structure) -->
+<!-- <div class="text-red-500 text-sm font-medium mb-4 hidden" id="error-message">Failed to save. Please try again.</div> -->
+<!-- Actions -->
+<div class="w-full flex flex-col gap-3">
+<!-- Primary CTA -->
+<button class="group relative w-full flex items-center justify-center h-14 px-6 bg-primary text-surface text-base font-bold rounded-full overflow-hidden transition-all duration-200 hover:bg-[#e05a41] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" type="button">
+<span class="truncate">Save &amp; Exit to Dashboard</span>
+<!-- Loading Spinner (Hidden by default) -->
+<!-- 
+          <span class="absolute inset-0 flex items-center justify-center bg-primary">
+            <svg class="animate-spin h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Saving...
+          </span> 
+          -->
+</button>
+<!-- Secondary CTA -->
+<button class="w-full flex items-center justify-center h-14 px-6 bg-transparent text-text-muted text-base font-bold rounded-full transition-colors duration-200 hover:bg-gray-50 hover:text-text-main focus:outline-none focus:ring-2 focus:ring-gray-200" type="button">
+<span class="truncate">Keep Going</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>
