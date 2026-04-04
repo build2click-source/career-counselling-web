@@ -24,7 +24,14 @@ export default function Login() {
     setLoading(false);
 
     if (res?.error) {
-      setError("Invalid email or password. Please try again.");
+      if (res.error.includes("No account found with this email.")) {
+        setError("Account not found. Redirecting to registration...");
+        setTimeout(() => {
+          router.push("/register");
+        }, 2000);
+      } else {
+        setError(res.error || "Invalid email or password. Please try again.");
+      }
     } else {
       router.push("/dashboard");
     }

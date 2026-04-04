@@ -120,6 +120,32 @@ export async function GET() {
       { area: "Logical Reasoning",   pct: profileVector["Logical Reasoning"] ?? 0 },
     ];
 
+    // ─── 6. Persist results if not already completed ─────────────────────
+    if (!attempt.isCompleted) {
+      await prisma.$transaction(async (tx) => {
+        // Mark attempt as completed
+        await tx.attempt.update({
+          where: { id: attempt.id },
+          data: {
+            isCompleted: true,
+            endTime: new Date(),
+          },
+        });
+
+        // Save top fitment scores
+        // Note: careerMatches is based on all profiles, but we only save the top 5
+        await tx.fitmentScore.createMany({
+          data: careerMatches.map((match) => ({
+            attemptId: attempt.id,
+            occupationalProfileId: match.id,
+            euclideanDistance: 0, // already factored into pct, but required by schema
+            fitmentPercentage: match.fitment,
+            matchedTags: "[]",
+          })),
+        });
+      });
+    }
+
     return NextResponse.json({
       attemptId: attempt.id,
       totalAnswered: attempt.responses.length,

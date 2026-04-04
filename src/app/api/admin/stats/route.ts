@@ -35,12 +35,16 @@ export async function GET() {
       },
     });
 
+    // Dynamic question count for progress calculation
+    const totalQuestions = await prisma.question.count({ where: { isArchived: false } });
+
     const candidates = recentStudents.map((student) => {
       const attempt = student.attempts[0];
       let status = "Not Started";
       let topMatch = "Pending";
       let lastActive = student.createdAt.toISOString();
       let progress = 0;
+      let attemptId = attempt?.id || null;
 
       if (attempt) {
         lastActive = attempt.updatedAt.toISOString();
@@ -50,17 +54,18 @@ export async function GET() {
           if (topFit) {
             topMatch = `${topFit.occupationalProfile.title} (${Math.round(topFit.fitmentPercentage)}%)`;
           }
+          progress = 100;
         } else {
           // Estimate progress from response count vs total questions
           const answered = attempt._count.responses;
-          // Rough estimate: 208 total questions
-          progress = Math.round((answered / 208) * 100);
+          progress = totalQuestions > 0 ? Math.round((answered / totalQuestions) * 100) : 0;
           status = `In Progress (${progress}%)`;
         }
       }
 
       return {
         id: student.id,
+        attemptId,
         email: student.email,
         status,
         topMatch,

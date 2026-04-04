@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 
 interface Candidate {
   id: string;
+  attemptId: string | null;
   email: string;
   status: string;
   topMatch: string;
@@ -121,6 +122,7 @@ export default function AdminDashboardPage() {
                     <th className="pb-3 font-semibold">Status</th>
                     <th className="pb-3 font-semibold">Top Match</th>
                     <th className="pb-3 font-semibold">Last Active</th>
+                    <th className="pb-3 font-semibold text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -137,6 +139,15 @@ export default function AdminDashboardPage() {
                       <td className="py-4 font-medium text-[#2D3142]">{c.topMatch}</td>
                       <td className="py-4 text-[#9095A7] text-sm">
                         {formatDistanceToNow(new Date(c.lastActive), { addSuffix: true })}
+                      </td>
+                      <td className="py-4 text-right">
+                        {c.attemptId ? (
+                          <Link href={`/admin/attempts/${c.attemptId}`} className="text-sm font-bold text-[#fb6a51] hover:underline">
+                            View Details
+                          </Link>
+                        ) : (
+                          <span className="text-sm text-slate-300">N/A</span>
+                        )}
                       </td>
                     </tr>
                   ))}

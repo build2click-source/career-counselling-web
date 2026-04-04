@@ -22,6 +22,7 @@ export async function PUT(req: Request, context: RouteContext) {
         ...(body.title && { title: body.title }),
         ...(body.type && { type: body.type }),
         ...(body.order !== undefined && { order: Number(body.order) }),
+        ...(body.isArchived !== undefined && { isArchived: body.isArchived }),
       },
     });
     return NextResponse.json(updated);
@@ -38,10 +39,24 @@ export async function DELETE(_req: Request, context: RouteContext) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { moduleId } = await context.params;
-
   try {
-    await prisma.assessmentModule.delete({ where: { id: moduleId } });
+    const { moduleId } = await context.params;
+    const module = await prisma.assessmentModule.findUnique({
+      where: { id: moduleId },
+      include: { assessment: { select: { _count: { select: { attempts: true } } } } }
+    });
+
+    if (!module) return NextResponse.json({ error: "Module not found" }, { status: 404 });
+
+    if (module.assessment._count.attempts > 0) {
+      await prisma.assessmentModule.update({
+        where: { id: moduleId },
+        data: { isArchived: true }
+      });
+    } else {
+      await prisma.assessmentModule.delete({ where: { id: moduleId } });
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("DELETE /api/admin/modules error:", error);

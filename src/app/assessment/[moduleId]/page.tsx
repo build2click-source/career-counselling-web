@@ -353,17 +353,14 @@ export default function AssessmentEnginePage() {
               Previous
             </button>
 
-            <button
-              onClick={handleNext}
-              disabled={currentQuestion ? answers[currentQuestion.id] === undefined : true}
-              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 md:px-8 py-3 rounded-full font-bold text-xs md:text-sm shadow-md transition-all ${
-                (currentQuestion && answers[currentQuestion.id] !== undefined)
-                  ? "bg-[#fb6a51] text-white hover:bg-[#e55b44] hover:shadow-lg active:scale-95"
-                  : "bg-slate-100 text-slate-400 cursor-not-allowed"
-              }`}
-            >
-              {currentIdx === totalQuestions - 1 ? "Finish Module" : "Next"}
-            </button>
+            {currentQuestion && answers[currentQuestion.id] !== undefined && selectedScore === null && (
+              <button
+                onClick={handleNext}
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 md:px-8 py-3 rounded-full font-bold text-xs md:text-sm shadow-md transition-all bg-[#fb6a51] text-white hover:bg-[#e55b44] hover:shadow-lg active:scale-95"
+              >
+                {currentIdx === totalQuestions - 1 ? "Finish Module" : "Next"}
+              </button>
+            )}
           </div>
 
         </div>

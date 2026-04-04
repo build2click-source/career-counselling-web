@@ -10,6 +10,7 @@ interface ModuleInfo {
   title: string;
   type: string;
   order: number;
+  isArchived: boolean;
   _count: { questions: number };
 }
 
@@ -18,6 +19,7 @@ interface AssessmentInfo {
   title: string;
   description: string | null;
   timeLimitMinutes: number;
+  isArchived: boolean;
   modules: ModuleInfo[];
   _count: { attempts: number };
 }
@@ -40,6 +42,10 @@ export default function ManageAssessmentsPage() {
 
   // Expanded assessment cards
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  // Form state for adding module to existing assessment
+  const [addModuleTitle, setAddModuleTitle] = useState("");
+  const [addModuleType, setAddModuleType] = useState("FFM");
 
   useEffect(() => {
     if (authStatus === "unauthenticated") { router.push("/login"); return; }
@@ -84,6 +90,47 @@ export default function ManageAssessmentsPage() {
     if (!confirm("Delete this module and all its questions? This cannot be undone.")) return;
     const res = await fetch(`/api/admin/modules/${moduleId}`, { method: "DELETE" });
     if (res.ok) loadAssessments();
+  }
+
+  async function handleDeleteAssessment(id: string) {
+    if (!confirm("Are you sure you want to delete this assessment? Past attempts might be archived.")) return;
+    const res = await fetch(`/api/admin/assessments/${id}`, { method: "DELETE" });
+    if (res.ok) loadAssessments();
+  }
+
+  async function handleRestoreAssessment(id: string) {
+    const res = await fetch(`/api/admin/assessments/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isArchived: false })
+    });
+    if (res.ok) loadAssessments();
+  }
+
+  async function handleRestoreModule(moduleId: string) {
+    const res = await fetch(`/api/admin/modules/${moduleId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isArchived: false })
+    });
+    if (res.ok) loadAssessments();
+  }
+
+  async function handleAddModule(id: string) {
+    const validTitle = addModuleTitle.trim();
+    if (!validTitle) return;
+    setSaving(true);
+    const res = await fetch(`/api/admin/assessments/${id}/modules`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: validTitle, type: addModuleType })
+    });
+    if (res.ok) {
+      setAddModuleTitle("");
+      setAddModuleType("FFM");
+      loadAssessments();
+    }
+    setSaving(false);
   }
 
   if (authStatus === "loading" || loading) {
@@ -190,22 +237,33 @@ export default function ManageAssessmentsPage() {
         ) : (
           <div className="flex flex-col gap-6">
             {assessments.map((a) => (
-              <div key={a.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+              <div key={a.id} className={`bg-white rounded-2xl shadow-sm border ${a.isArchived ? "border-slate-300 opacity-60" : "border-slate-100"} overflow-hidden`}>
                 {/* Header */}
-                <button
-                  onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}
-                  className="w-full flex items-start md:items-center justify-between p-5 md:p-6 hover:bg-[#f8f6f5] transition-colors text-left"
-                >
-                  <div className="flex flex-col gap-1">
-                    <h3 className="text-lg md:text-xl font-bold text-[#2D3142]">{a.title}</h3>
+                <div className="w-full flex items-start md:items-center justify-between p-5 md:p-6 hover:bg-[#f8f6f5] transition-colors text-left border-b border-transparent">
+                  <button onClick={() => setExpandedId(expandedId === a.id ? null : a.id)} className="flex-1 flex flex-col gap-1 text-left">
+                    <div className="flex items-center gap-2">
+                      <h3 className={`text-lg md:text-xl font-bold ${a.isArchived ? "text-slate-500" : "text-[#2D3142]"}`}>{a.title}</h3>
+                      {a.isArchived && <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-500 uppercase">Archived</span>}
+                    </div>
                     <p className="text-xs md:text-sm text-[#9095A7]">
                       {a.modules.length} modules · {a.timeLimitMinutes} min · {a._count.attempts} attempts
                     </p>
+                  </button>
+                  <div className="flex items-center gap-4">
+                    {a.isArchived ? (
+                      <button onClick={() => handleRestoreAssessment(a.id)} className="text-sm font-bold text-slate-600 hover:text-[#fb6a51] bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors">
+                        Restore
+                      </button>
+                    ) : (
+                      <button onClick={() => handleDeleteAssessment(a.id)} className="text-sm font-bold text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors">
+                        Delete
+                      </button>
+                    )}
+                    <span className={`text-xl md:text-2xl transition-transform duration-200 cursor-pointer ${expandedId === a.id ? "rotate-180" : ""}`} onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}>
+                      ▾
+                    </span>
                   </div>
-                  <span className={`text-xl md:text-2xl transition-transform duration-200 ${expandedId === a.id ? "rotate-180" : ""}`}>
-                    ▾
-                  </span>
-                </button>
+                </div>
 
                 {/* Expanded: Module List */}
                 {expandedId === a.id && (
@@ -222,9 +280,12 @@ export default function ManageAssessmentsPage() {
                       </thead>
                       <tbody>
                         {a.modules.map((m) => (
-                          <tr key={m.id} className="border-b border-slate-50 hover:bg-[#f8f6f5] transition-colors">
+                          <tr key={m.id} className={`border-b border-slate-50 hover:bg-[#f8f6f5] transition-colors ${m.isArchived ? "opacity-50 grayscale" : ""}`}>
                             <td className="py-3 text-sm font-bold text-[#9095A7]">{m.order}</td>
-                            <td className="py-3 font-bold text-[#2D3142]">{m.title}</td>
+                            <td className="py-3 font-bold text-[#2D3142]">
+                              {m.title}
+                              {m.isArchived && <span className="ml-2 px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-200 text-slate-500 uppercase">Archived</span>}
+                            </td>
                             <td className="py-3">
                               <span className="px-2.5 py-1 rounded-full bg-slate-100 text-xs font-bold text-slate-600">{m.type}</span>
                             </td>
@@ -234,15 +295,38 @@ export default function ManageAssessmentsPage() {
                                 className="text-sm font-bold text-[#fb6a51] hover:underline">
                                 Edit Questions
                               </Link>
-                              <button onClick={() => handleDeleteModule(m.id)}
-                                className="text-sm font-bold text-red-400 hover:text-red-600 transition-colors">
-                                Delete
-                              </button>
+                              {m.isArchived ? (
+                                <button onClick={() => handleRestoreModule(m.id)}
+                                  className="text-sm font-bold text-slate-500 hover:text-[#fb6a51] transition-colors">
+                                  Restore
+                                </button>
+                              ) : (
+                                <button onClick={() => handleDeleteModule(m.id)}
+                                  className="text-sm font-bold text-red-400 hover:text-red-600 transition-colors">
+                                  Delete
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
+                    <div className="mt-6 flex flex-col gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                      <label className="text-xs font-bold text-[#9095A7] uppercase">Add New Module</label>
+                      <div className="flex items-center gap-3">
+                        <input value={addModuleTitle} onChange={(e) => setAddModuleTitle(e.target.value)}
+                          className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#fb6a51] focus:outline-none transition-colors text-sm"
+                          placeholder="Module title" />
+                        <select value={addModuleType} onChange={(e) => setAddModuleType(e.target.value)}
+                          className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-[#fb6a51] focus:outline-none bg-white">
+                          {MODULE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                        <button type="button" disabled={saving || !addModuleTitle.trim()} onClick={() => handleAddModule(a.id)}
+                          className="px-5 py-2.5 rounded-xl bg-[#2D3142] text-white font-bold text-sm shadow-sm hover:bg-[#1a1e2e] transition-all disabled:opacity-50">
+                          {saving ? "..." : "Add"}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

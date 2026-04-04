@@ -24,13 +24,11 @@ export const authOptions: AuthOptions = {
                 });
 
                 if (!user) {
-                    return null;
+                    throw new Error("No account found with this email.");
                 }
-
                 const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
-
                 if (!isPasswordValid) {
-                    return null;
+                    throw new Error("Invalid password. Please try again.");
                 }
 
                 return {
