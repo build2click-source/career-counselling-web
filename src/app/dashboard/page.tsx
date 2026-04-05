@@ -124,7 +124,7 @@ export default function DashboardTopPage() {
                           Latest Results
                         </button>
                       </Link>
-                      {asmt.attemptsRemaining > 0 && (
+                      {(asmt.attemptsRemaining > 0 || (session?.user as any)?.role === "ADMIN") && (
                         <Link href={`/dashboard/${asmt.id}`} className="w-full">
                           <button className="w-full sm:w-[260px] px-8 py-3 rounded-full font-bold text-sm border-2 border-[#fb6a51] text-[#fb6a51] hover:bg-[#fb6a51] hover:text-white transition-all active:scale-95">
                             Retry Assessment

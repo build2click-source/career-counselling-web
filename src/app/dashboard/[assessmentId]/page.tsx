@@ -99,9 +99,29 @@ export default function AssessmentModuleMapPage() {
         {/* ─── Welcome Header ─── */}
         <section className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white px-8 py-6 rounded-3xl shadow-sm border border-slate-100">
           <div className="flex flex-col gap-2 flex-1 text-center md:text-left">
-            <h1 className="text-2xl lg:text-3xl font-extrabold leading-tight tracking-tight text-[#2D3142]">
-              {assessment.title}
-            </h1>
+            <div className="flex items-center gap-4 justify-center md:justify-start">
+              <h1 className="text-2xl lg:text-3xl font-extrabold leading-tight tracking-tight text-[#2D3142]">
+                {assessment.title}
+              </h1>
+              {isAdmin && (
+                <button
+                  onClick={async () => {
+                    if (confirm("Reset everything? Your current answers will be finalized and a fresh attempt started.")) {
+                      setLoading(true);
+                      await fetch("/api/admin/reset-attempt", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ assessmentId }),
+                      });
+                      window.location.reload();
+                    }
+                  }}
+                  className="px-4 py-1.5 rounded-full border border-[#fb6a51] text-[#fb6a51] text-xs font-bold hover:bg-[#fb6a51]/5 transition-colors"
+                >
+                  Retry Assessment (Admin)
+                </button>
+              )}
+            </div>
             <p className="text-sm font-medium text-[#9095A7] line-clamp-2 leading-relaxed">{assessment.description || "Complete the modules below to finish this assessment."}</p>
           </div>
 

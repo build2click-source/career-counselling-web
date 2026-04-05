@@ -11,7 +11,7 @@ export default function Navbar() {
   const [targetAsmt, setTargetAsmt] = useState<{ id: string; status: string; attemptId: string | null } | null>(null);
 
   // Hide navbar on login/register or assessment pages (Focus Mode)
-  if (pathname === "/login" || pathname === "/register" || pathname?.startsWith("/assessment/")) return null;
+  const isHidden = pathname === "/login" || pathname === "/register" || pathname?.startsWith("/assessment/");
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -31,11 +31,17 @@ export default function Navbar() {
     }
   }, [status]);
 
-  const assessmentLink = targetAsmt 
-    ? (targetAsmt.status === "COMPLETED" 
-        ? (targetAsmt.attemptId ? `/results/${targetAsmt.attemptId}` : "/dashboard")
-        : `/dashboard/${targetAsmt.id}`) 
-    : "/dashboard";
+  if (isHidden) return null;
+
+  const isAdmin = (session?.user as any)?.role === "ADMIN";
+
+  const assessmentLink = isAdmin 
+    ? "/dashboard" 
+    : (targetAsmt 
+        ? (targetAsmt.status === "COMPLETED" 
+            ? (targetAsmt.attemptId ? `/results/${targetAsmt.attemptId}` : "/dashboard")
+            : `/dashboard/${targetAsmt.id}`) 
+        : "/dashboard");
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-200">

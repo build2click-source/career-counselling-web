@@ -151,6 +151,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       attemptId: attempt.id,
+      assessmentId: attempt.assessmentId, // Include this
       totalAnswered: attempt.responses.length,
       big5,
       radarData,

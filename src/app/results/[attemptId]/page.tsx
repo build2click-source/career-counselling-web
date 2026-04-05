@@ -44,6 +44,7 @@ interface ResultsData {
   big5: Big5;
   radarData: RadarPoint[];
   cognitiveBreakdown: CognitiveBreakdown[];
+  assessmentId: string;
   careerMatches: CareerMatch[];
 }
 
@@ -72,7 +73,7 @@ function FitmentBar({ pct, color }: { pct: number; color: string }) {
 }
 
 export default function ResultsPage() {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const params = useParams();
   const [data, setData] = useState<ResultsData | null>(null);
@@ -252,19 +253,26 @@ export default function ResultsPage() {
         )}
 
         {/* ─── CTA ─── */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
-          <Link href="/dashboard">
-            <button className="w-full sm:w-auto px-8 py-3.5 rounded-full border-2 border-slate-200 text-slate-700 font-bold hover:border-[#fb6a51] hover:text-[#fb6a51] transition-all">
-              ← Back to Dashboard
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
+            <Link href="/dashboard">
+              <button className="w-full sm:w-auto px-8 py-3.5 rounded-full border-2 border-slate-200 text-slate-700 font-bold hover:border-[#fb6a51] hover:text-[#fb6a51] transition-all">
+                ← Back to Dashboard
+              </button>
+            </Link>
+            {(session?.user as any)?.role === "ADMIN" && (
+              <Link href={`/dashboard/${data.assessmentId || '5f7f2209-af71-4c28-bd9e-60aacdaef7b8'}`}>
+                <button className="w-full sm:w-auto px-8 py-3.5 rounded-full border-2 border-[#fb6a51] text-[#fb6a51] font-bold hover:bg-[#fb6a51] hover:text-white transition-all">
+                  Retry Assessment
+                </button>
+              </Link>
+            )}
+            <button
+              onClick={() => window.print()}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#fb6a51] text-white font-bold shadow-lg shadow-[#fb6a51]/25 hover:bg-[#e55b44] transition-all"
+            >
+              Download Report 📄
             </button>
-          </Link>
-          <button
-            onClick={() => window.print()}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#fb6a51] text-white font-bold shadow-lg shadow-[#fb6a51]/25 hover:bg-[#e55b44] transition-all"
-          >
-            Download Report 📄
-          </button>
-        </div>
+          </div>
       </div>
     </div>
   );

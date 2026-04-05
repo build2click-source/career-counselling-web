@@ -52,12 +52,16 @@ export default function Home() {
     }
   }, [isLoggedIn]);
 
+  const isAdmin = (session?.user as any)?.role === "ADMIN";
+
   const assessmentLink = isLoggedIn 
-    ? (targetAsmt 
-        ? (targetAsmt.status === "COMPLETED" 
-            ? (targetAsmt.attemptId ? `/results/${targetAsmt.attemptId}` : "/dashboard")
-            : `/dashboard/${targetAsmt.id}`) 
-        : "/dashboard") 
+    ? (isAdmin
+        ? "/dashboard"
+        : (targetAsmt 
+            ? (targetAsmt.status === "COMPLETED" 
+                ? (targetAsmt.attemptId ? `/results/${targetAsmt.attemptId}` : "/dashboard")
+                : `/dashboard/${targetAsmt.id}`) 
+            : "/dashboard"))
     : "/register";
 
   return (
