@@ -17,6 +17,7 @@ interface Question {
 
 interface ModuleData {
   moduleId: string;
+  assessmentId: string;
   title: string;
   type: string;
   order: number;
@@ -67,14 +68,12 @@ export default function AssessmentEnginePage() {
         if (data.error) { setError(data.error); setLoading(false); return; }
         setModuleData(data);
 
-        // 2. Fetch the main assessment id, then start/resume an attempt
-        const asmtRes = await fetch("/api/assessment");
-        const asmt = await asmtRes.json();
-        if (asmt?.id) {
+        // 2. Start or resume an attempt tied to this specific module's assessment
+        if (data.assessmentId) {
           const attemptRes = await fetch("/api/attempt/start", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ assessmentId: asmt.id }),
+            body: JSON.stringify({ assessmentId: data.assessmentId }),
           });
           const attemptData = await attemptRes.json();
           if (attemptData.attemptId) {

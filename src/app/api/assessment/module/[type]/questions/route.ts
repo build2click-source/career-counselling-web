@@ -2,16 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // GET /api/assessment/module/[type]/questions
-// Returns all questions for a module matched by type (e.g. FFM, RIASEC, Cognitive, Values, SJT)
+// Returns all questions for a module matched by ID (parameter is named 'type' for legacy reasons)
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ type: string }> }
 ) {
   try {
-    const { type } = await params;
+    const { type: moduleId } = await params;
 
-    const module = await prisma.assessmentModule.findFirst({
-      where: { type: { equals: type, mode: "insensitive" } },
+    const module = await prisma.assessmentModule.findUnique({
+      where: { id: moduleId },
       include: {
         questions: {
           where: { isArchived: false },
@@ -30,7 +30,7 @@ export async function GET(
     });
 
     if (!module) {
-      return NextResponse.json({ error: `Module of type '${type}' not found` }, { status: 404 });
+      return NextResponse.json({ error: `Module not found` }, { status: 404 });
     }
 
     // Parse options JSON for each question
@@ -41,6 +41,7 @@ export async function GET(
 
     return NextResponse.json({
       moduleId: module.id,
+      assessmentId: module.assessmentId,
       title: module.title,
       type: module.type,
       order: module.order,

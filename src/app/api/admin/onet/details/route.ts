@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
     const targetVector = ONetMapper.toTargetVector(scores);
 
     return NextResponse.json({
-      title: details.occupation.title,
-      description: details.occupation.description,
+      title: details.title || details.occupation?.title,
+      description: details.description || details.occupation?.description,
       scores,
       targetVector
     });

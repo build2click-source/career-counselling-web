@@ -3,24 +3,21 @@
  * Documentation: https://services.onetcenter.org/reference
  */
 export class ONetClient {
-  private authHeader: string;
-  private baseUrl = "https://services.onetcenter.org/ws";
+  private apiKey: string;
+  private baseUrl = "https://api-v2.onetcenter.org";
 
   constructor() {
-    const username = process.env.ONET_ACCOUNT_ID;
-    const password = process.env.ONET_WEB_SERVICES_PASSWORD;
+    this.apiKey = process.env.ONET_API_KEY || "";
 
-    if (!username || !password) {
-      console.warn("ONET_ACCOUNT_ID and ONET_WEB_SERVICES_PASSWORD must be set for O*NET Integration.");
+    if (!this.apiKey) {
+       console.warn("Missing O*NET credentials! Please set ONET_API_KEY in .env");
     }
-    
-    this.authHeader = `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`;
   }
 
   private async fetchONet(path: string) {
     const response = await fetch(`${this.baseUrl}${path}`, {
       headers: {
-        Authorization: this.authHeader,
+        "X-API-Key": this.apiKey,
         Accept: "application/json",
       },
     });
@@ -37,21 +34,26 @@ export class ONetClient {
    * Search for occupations by keyword
    */
   async searchOccupations(keyword: string) {
-    return this.fetchONet(`/mnm/search?keyword=${encodeURIComponent(keyword)}`);
+    const raw = await this.fetchONet(`/mnm/search?keyword=${encodeURIComponent(keyword)}`);
+    // Normalize V2 API { career: [ {code, title} ] } to V1 frontend format { occupation: [ { occupation: { code, title } } ] }
+    if (raw.career) {
+      return { occupation: raw.career.map((c: any) => ({ occupation: c })) };
+    }
+    return raw;
   }
 
   /**
    * Get RIASEC Interest descriptors for an occupation
    */
   async getInterests(socCode: string) {
-    return this.fetchONet(`/mnm/careers/${socCode}/interests`);
+    return this.fetchONet(`/online/occupations/${socCode}/details/interests`);
   }
 
   /**
    * Get Work Style descriptors (mapped to Personality)
    */
   async getWorkStyles(socCode: string) {
-    return this.fetchONet(`/mnm/careers/${socCode}/work_styles`);
+    return this.fetchONet(`/online/occupations/${socCode}/details/work_styles`);
   }
 
   /**

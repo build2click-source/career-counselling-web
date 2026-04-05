@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET /api/assessment — returns the primary assessment with all modules
+// GET /api/assessment — returns list of all active assessments
 export async function GET() {
   try {
-    const assessment = await prisma.assessment.findFirst({
+    const assessments = await prisma.assessment.findMany({
+      where: { isArchived: false },
       orderBy: { createdAt: "asc" },
       include: {
         modules: {
@@ -20,11 +21,11 @@ export async function GET() {
       },
     });
 
-    if (!assessment) {
-      return NextResponse.json({ error: "No assessment found" }, { status: 404 });
+    if (!assessments || assessments.length === 0) {
+      return NextResponse.json({ error: "No assessments found" }, { status: 404 });
     }
 
-    return NextResponse.json(assessment);
+    return NextResponse.json(assessments);
   } catch (error) {
     console.error("GET /api/assessment error:", error);
     return NextResponse.json({ error: "Failed to fetch assessment" }, { status: 500 });

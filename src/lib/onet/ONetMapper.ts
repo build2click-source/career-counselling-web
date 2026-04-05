@@ -7,12 +7,26 @@ import { RawPsychometricScores } from "../patterns/ONetAdapter";
 export class ONetMapper {
   
   /**
+   * Translates 0-100 scales to our internal 0-5 scale.
+   */
+  private static scale100to5(score: number): number {
+    return Math.round((score / 100) * 5 * 10) / 10;
+  }
+
+  /**
    * Translates O*NET Likert-style importance/level scores (1-7) 
    * to our internal 0-5 scale.
    */
   private static scaleTo5(score: number): number {
     // (score - 1) / (7 - 1) * 5
     return Math.round(((score - 1) / 6) * 5 * 10) / 10;
+  }
+
+  /**
+   * Translates value to a 0-5 scale robustly based on input range.
+   */
+  private static autoScaleTo5(score: number): number {
+     return score <= 7 ? this.scaleTo5(score) : this.scale100to5(score);
   }
 
   /**
@@ -36,58 +50,64 @@ export class ONetMapper {
       logicalReasoning: 0.5,
     };
 
-    // 1. RIASEC (Interests) — typically provided as average/score 1-7
-    if (interests?.interests) {
-      for (const i of interests.interests) {
-        const score = this.scaleTo5(i.occupational_interest || 3);
-        switch (i.interest_code) {
-          case 'R': scores.realistic = score; break;
-          case 'I': scores.investigative = score; break;
-          case 'A': scores.artistic = score; break;
-          case 'S': scores.social = score; break;
-          case 'E': scores.enterprising = score; break;
-          case 'C': scores.conventional = score; break;
-        }
+    // 1. RIASEC (Interests) — typically provided as average/score 1-7 or 0-100
+    const interestArr = interests?.element || interests?.interests || [];
+    for (const i of interestArr) {
+      let val = i.occupational_interest ?? i.score ?? 50; 
+      const score = this.autoScaleTo5(val);
+      const code = i.interest_code || (i.name ? i.name.charAt(0).toUpperCase() : "X");
+      
+      switch (code) {
+        case 'R': scores.realistic = score; break;
+        case 'I': scores.investigative = score; break;
+        case 'A': scores.artistic = score; break;
+        case 'S': scores.social = score; break;
+        case 'E': scores.enterprising = score; break;
+        case 'C': scores.conventional = score; break;
       }
     }
 
     // 2. Personality (from Work Styles)
-    if (workStyles?.work_styles) {
-      const styles = workStyles.work_styles;
-      const getS = (name: string) => styles.find((s: any) => s.name === name)?.score || 3.5;
+    const workStylesArr = workStyles?.element || workStyles?.work_styles || [];
+    const getS = (name: string) => {
+      const found = workStylesArr.find((s: any) => s.name === name);
+      if (!found) return 3.5;
+      let val = found.importance ?? found.score ?? 50;
+      return this.autoScaleTo5(val);
+    };
 
-      // Extraversion: Social Orientation + Independence (vaguely related)
-      scores.extraversion = this.scaleTo5(getS('Social Orientation'));
-      
-      // Agreeableness: Cooperation + Concern for Others
-      scores.agreeableness = this.scaleTo5((getS('Cooperation') + getS('Concern for Others')) / 2);
-      
-      // Conscientiousness: Attention to Detail + Dependability + Integrity
-      scores.conscientiousness = this.scaleTo5((getS('Attention to Detail') + getS('Dependability') + getS('Integrity')) / 2.5);
-      
-      // Neuroticism: Inverse of (Stress Tolerance + Self Control)
-      const stability = (getS('Stress Tolerance') + getS('Self Control')) / 2;
-      scores.neuroticism = 5 - this.scaleTo5(stability); // High stability = Low neuroticism
+    // Extraversion: Social Orientation + Independence
+    scores.extraversion = this.autoScaleTo5((getS('Social Orientation') * 20 + getS('Independence') * 20) / 2);
+    // Work Styles map directly over without the x20 if we just do autoScaleTo5, BUT getS already auto-scales!
+    // So getS returns 0-5. Let's just average them directly.
+    scores.extraversion = Math.round((getS('Social Orientation') + getS('Independence')) / 2 * 10) / 10;
+    
+    // Agreeableness: Cooperation + Concern for Others
+    scores.agreeableness = Math.round((getS('Cooperation') + getS('Concern for Others')) / 2 * 10) / 10;
+    
+    // Conscientiousness: Attention to Detail + Dependability + Integrity
+    scores.conscientiousness = Math.round((getS('Attention to Detail') + getS('Dependability') + getS('Integrity')) / 3 * 10) / 10;
+    
+    // Neuroticism: Inverse of (Stress Tolerance + Self Control)
+    const stability = (getS('Stress Tolerance') + getS('Self Control')) / 2;
+    scores.neuroticism = Math.round((5 - stability) * 10) / 10; // High stability = Low neuroticism
 
-      // Openness: Innovation + Analytical Thinking
-      scores.openness = this.scaleTo5((getS('Innovation') + getS('Analytical Thinking')) / 2);
-    }
+    // Openness: Innovation + Analytical Thinking
+    scores.openness = Math.round((getS('Innovation') + getS('Analytical Thinking')) / 2 * 10) / 10;
 
-    // 3. Cognitive Aptitudes (Abilities) — typically provided as Level/Importance (1-7)
-    if (abilities?.ability) {
-      const abs = abilities.ability;
-      const findA = (id: string) => abs.find((a: any) => a.id === id)?.score?.value || 3;
+    // 3. Cognitive Aptitudes (Abilities)
+    const abilitiesArr = abilities?.element || abilities?.ability || [];
+    const findA = (name: string) => {
+      const found = abilitiesArr.find((a: any) => a.name === name);
+      if (!found) return 0.5;
+      let val = found.importance ?? found?.score?.value ?? found?.score ?? 50;
+      return val <= 7 ? (val / 7) : (val / 100);
+    };
 
-      // Numerical (2.A.1.f: Mathematical Reasoning)
-      // Level scores on O*NET are often 0-7. Scaling to 0-1 for our aptitude indicator.
-      scores.numericalReasoning = Math.round((findA('2.A.1.f') / 7) * 10) / 10;
-      
-      // Verbal (2.A.1.a: Oral Comprehension / Written Comprehension)
-      scores.verbalReasoning = Math.round((findA('2.A.1.a') / 7) * 10) / 10;
-      
-      // Logical (2.A.1.b: Deductive Reasoning)
-      scores.logicalReasoning = Math.round((findA('2.A.1.b') / 7) * 10) / 10;
-    }
+    // Aptitudes are typically normalized to 0-1 metrics internally, so we use findA which returns 0-1
+    scores.numericalReasoning = Math.round(findA('Mathematical Reasoning') * 10) / 10;
+    scores.verbalReasoning = Math.round(((findA('Oral Comprehension') + findA('Written Comprehension')) / 2) * 10) / 10;
+    scores.logicalReasoning = Math.round(findA('Deductive Reasoning') * 10) / 10;
 
     return scores;
   }

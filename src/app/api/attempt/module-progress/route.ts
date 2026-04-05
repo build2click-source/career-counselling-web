@@ -5,17 +5,20 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // GET /api/attempt/module-progress
 // Returns per-module answer counts for the user's current attempt
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const userId = (session.user as any).id as string;
+    const { searchParams } = new URL(req.url);
+    const assessmentId = searchParams.get("assessmentId") || undefined;
 
-    // Find the user's current active attempt
+    // Find the user's current active attempt (optionally scoped to a precise assessment)
     const attempt = await prisma.attempt.findFirst({
       where: {
         userId,
+        assessmentId,
         isCompleted: false,
         sessionExpiry: { gt: new Date() },
       },
