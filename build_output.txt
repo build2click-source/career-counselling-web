@@ -1,0 +1,10 @@
+
+> ilets-exam-taker@0.1.0 build
+> prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Error: 
+EPERM: operation not permitted, rename 'C:\projects\ilets exam taker\node_modules\.prisma\client\query_engine-windows.dll.node.tmp13156' -> 'C:\projects\ilets exam taker\node_modules\.prisma\client\query_engine-windows.dll.node'
+
+
