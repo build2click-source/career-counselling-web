@@ -80,12 +80,6 @@ export default function AdminDashboardPage() {
             Overview
           </Link>
           <Link
-            href="/admin/assessments"
-            className="px-5 py-2.5 rounded-full bg-white text-slate-600 text-sm font-bold border border-slate-200 hover:border-[#fb6a51] hover:text-[#fb6a51] transition-all text-center"
-          >
-            Manage Assessments
-          </Link>
-          <Link
             href="/admin/profiles"
             className="px-5 py-2.5 rounded-full bg-white text-slate-600 text-sm font-bold border border-slate-200 hover:border-[#fb6a51] hover:text-[#fb6a51] transition-all text-center"
           >
