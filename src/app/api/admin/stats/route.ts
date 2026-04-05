@@ -14,62 +14,60 @@ export async function GET() {
     const completedAttempts = await prisma.attempt.count({ where: { isCompleted: true } });
     const inProgressAttempts = await prisma.attempt.count({ where: { isCompleted: false } });
 
-    // Recent candidates: latest 10 students with their most recent attempt
-    const recentStudents = await prisma.user.findMany({
-      where: { role: "STUDENT" },
-      orderBy: { createdAt: "desc" },
-      take: 10,
+    // Recent attempts: latest 15 active attempts across the platform
+    const recentAttempts = await prisma.attempt.findMany({
+      orderBy: { updatedAt: "desc" },
+      take: 15,
       include: {
-        attempts: {
-          orderBy: { createdAt: "desc" },
+        user: { select: { email: true, id: true } },
+        assessment: { select: { title: true } },
+        fitmentScores: {
+          orderBy: { fitmentPercentage: "desc" },
           take: 1,
-          include: {
-            fitmentScores: {
-              orderBy: { fitmentPercentage: "desc" },
-              take: 1,
-              include: { occupationalProfile: { select: { title: true } } },
-            },
-            _count: { select: { responses: true } },
-          },
+          include: { occupationalProfile: { select: { title: true } } },
+        },
+        _count: { select: { responses: true } },
+      },
+    });
+
+    // Dynamic question counts per assessment for accurate progress
+    const assessments = await prisma.assessment.findMany({
+      select: {
+        id: true,
+        modules: {
+          select: { _count: { select: { questions: { where: { isArchived: false } } } } },
         },
       },
     });
 
-    // Dynamic question count for progress calculation
-    const totalQuestions = await prisma.question.count({ where: { isArchived: false } });
+    const questionCountsByAssessment: Record<string, number> = {};
+    for (const a of assessments) {
+      questionCountsByAssessment[a.id] = a.modules.reduce((sum, m) => sum + m._count.questions, 0);
+    }
 
-    const candidates = recentStudents.map((student) => {
-      const attempt = student.attempts[0];
+    const candidates = recentAttempts.map((attempt) => {
       let status = "Not Started";
       let topMatch = "Pending";
-      let lastActive = student.createdAt.toISOString();
-      let progress = 0;
-      let attemptId = attempt?.id || null;
+      const totalQuestions = questionCountsByAssessment[attempt.assessmentId] || 0;
 
-      if (attempt) {
-        lastActive = attempt.updatedAt.toISOString();
-        if (attempt.isCompleted) {
-          status = "Completed";
-          const topFit = attempt.fitmentScores[0];
-          if (topFit) {
-            topMatch = `${topFit.occupationalProfile.title} (${Math.round(topFit.fitmentPercentage)}%)`;
-          }
-          progress = 100;
-        } else {
-          // Estimate progress from response count vs total questions
-          const answered = attempt._count.responses;
-          progress = totalQuestions > 0 ? Math.round((answered / totalQuestions) * 100) : 0;
-          status = `In Progress (${progress}%)`;
-        }
+      if (attempt.isCompleted) {
+        status = "Completed";
+        const topFit = attempt.fitmentScores[0];
+        if (topFit) topMatch = `${topFit.occupationalProfile.title} (${Math.round(topFit.fitmentPercentage)}%)`;
+      } else {
+        const answered = attempt._count.responses;
+        const progress = totalQuestions > 0 ? Math.round((answered / totalQuestions) * 100) : 0;
+        status = answered > 0 ? `In Progress (${progress}%)` : "Not Started";
       }
 
       return {
-        id: student.id,
-        attemptId,
-        email: student.email,
+        id: attempt.id, // using attempt.id as row key
+        attemptId: attempt.id,
+        email: attempt.user.email,
+        assessmentName: attempt.assessment.title,
         status,
         topMatch,
-        lastActive,
+        lastActive: attempt.updatedAt.toISOString(),
       };
     });
 

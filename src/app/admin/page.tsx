@@ -10,6 +10,7 @@ interface Candidate {
   id: string;
   attemptId: string | null;
   email: string;
+  assessmentName: string;
   status: string;
   topMatch: string;
   lastActive: string;
@@ -110,7 +111,7 @@ export default function AdminDashboardPage() {
 
         {/* ─── Candidates Table ─── */}
         <section className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
-          <h3 className="text-2xl font-bold text-[#2D3142] mb-6">Recent Candidates</h3>
+          <h3 className="text-2xl font-bold text-[#2D3142] mb-6">Recent Attempts</h3>
           {stats.candidates.length === 0 ? (
             <p className="text-slate-400 text-center py-8">No students registered yet.</p>
           ) : (
@@ -119,6 +120,7 @@ export default function AdminDashboardPage() {
                 <thead>
                   <tr className="border-b-2 border-[#f4e8e6] text-[#9095A7] text-sm uppercase tracking-wider">
                     <th className="pb-3 font-semibold">Candidate</th>
+                    <th className="pb-3 font-semibold">Assessment</th>
                     <th className="pb-3 font-semibold">Status</th>
                     <th className="pb-3 font-semibold">Top Match</th>
                     <th className="pb-3 font-semibold">Last Active</th>
@@ -130,6 +132,9 @@ export default function AdminDashboardPage() {
                     <tr key={c.id} className="border-b border-[#f4e8e6] hover:bg-[#f8f6f5] transition-colors">
                       <td className="py-4">
                         <span className="font-bold text-[#2D3142]">{c.email}</span>
+                      </td>
+                      <td className="py-4">
+                        <span className="font-semibold text-slate-500">{c.assessmentName || "Global"}</span>
                       </td>
                       <td className="py-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusStyle(c.status)}`}>
