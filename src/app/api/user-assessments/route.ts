@@ -42,7 +42,7 @@ export async function GET() {
       const asmtAttempts = attemptHistory.filter(a => a.assessmentId === asmt.id);
       const latestAttempt = asmtAttempts.length > 0 ? asmtAttempts[0] : null;
 
-      const attemptsRemaining = Math.max(0, 3 - asmtAttempts.length);
+      const attemptsRemaining = Math.max(0, 1 - asmtAttempts.length);
 
       const pastAttempts = asmtAttempts.map(a => {
          return {

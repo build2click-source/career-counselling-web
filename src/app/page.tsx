@@ -32,6 +32,24 @@ const modules = [
 export default function Home() {
   const { data: session } = useSession();
   const isLoggedIn = !!session?.user;
+  const [targetAsmtId, setTargetAsmtId] = (require('react').useState)(null);
+
+  (require('react').useEffect)(() => {
+    if (isLoggedIn) {
+      fetch("/api/user-assessments")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.assessments?.[0]) {
+            setTargetAsmtId(data.assessments[0].id);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isLoggedIn]);
+
+  const assessmentLink = isLoggedIn 
+    ? (targetAsmtId ? `/dashboard/${targetAsmtId}` : "/dashboard") 
+    : "/register";
 
   return (
     <div className="bg-[#f8f6f5] text-slate-900 font-sans min-h-screen">
@@ -60,7 +78,7 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mt-2">
-            <Link href={isLoggedIn ? "/dashboard" : "/register"}>
+            <Link href={assessmentLink}>
               <button className="px-8 py-4 rounded-full bg-[#fb6a51] text-white font-bold text-base shadow-lg shadow-[#fb6a51]/30 hover:bg-[#e55b44] hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95">
                 Start Your Assessment →
               </button>
@@ -157,7 +175,7 @@ export default function Home() {
           <p className="text-white/80 text-base md:text-lg mb-8 max-w-xl mx-auto relative z-10">
             Join thousands of students and professionals who have discovered their ideal career path through science.
           </p>
-          <Link href={isLoggedIn ? "/dashboard" : "/register"}>
+          <Link href={assessmentLink}>
             <button className="relative z-10 px-10 py-4 rounded-full bg-white text-[#fb6a51] font-black text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95">
               {isLoggedIn ? "Continue Assessment →" : "Start Free Assessment →"}
             </button>
