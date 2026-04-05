@@ -234,8 +234,8 @@ export default function AssessmentEnginePage() {
     );
   }
 
-  // ─── Finishing Loader ────────────────────────────────────────────────────
-  if (saving && currentIdx >= totalQuestions - 1) {
+  // ─── Saving Loader ──────────────────────────────────────────────────────
+  if (saving) {
     return (
       <div className="min-h-screen bg-[#f8f6f5] flex flex-col items-center justify-center gap-6 px-4">
         <div className="w-12 h-12 border-4 border-[#fb6a51]/30 border-t-[#fb6a51] rounded-full animate-spin" />
