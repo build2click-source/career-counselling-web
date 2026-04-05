@@ -14,20 +14,25 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const assessmentId = searchParams.get("assessmentId") || undefined;
 
-    // Find the user's current active attempt (optionally scoped to a precise assessment)
-    const attempt = await prisma.attempt.findFirst({
+    // Find all attempts for this assessment and pick the one with most progress, or the latest
+    const attempts = await prisma.attempt.findMany({
       where: {
         userId,
         assessmentId,
-        isCompleted: false,
-        sessionExpiry: { gt: new Date() },
+      },
+      include: {
+        _count: { select: { responses: true } }
       },
       orderBy: { createdAt: "desc" },
     });
 
-    if (!attempt) {
+    if (attempts.length === 0) {
       return NextResponse.json({ moduleProgress: {} });
     }
+
+    // Prioritize the attempt with the most responses (if any have responses)
+    // Otherwise just use the latest one
+    const attempt = attempts.sort((a, b) => b._count.responses - a._count.responses)[0];
 
     // Count responses per module
     const responses = await prisma.response.findMany({

@@ -32,7 +32,7 @@ const modules = [
 export default function Home() {
   const { data: session } = useSession();
   const isLoggedIn = !!session?.user;
-  const [targetAsmtId, setTargetAsmtId] = (require('react').useState)(null);
+  const [targetAsmt, setTargetAsmt] = (require('react').useState)(null);
 
   (require('react').useEffect)(() => {
     if (isLoggedIn) {
@@ -40,7 +40,12 @@ export default function Home() {
         .then((r) => r.json())
         .then((data) => {
           if (data.assessments?.[0]) {
-            setTargetAsmtId(data.assessments[0].id);
+            const first = data.assessments[0];
+            setTargetAsmt({
+              id: first.id,
+              status: first.status,
+              attemptId: first.attemptId
+            });
           }
         })
         .catch(() => {});
@@ -48,7 +53,11 @@ export default function Home() {
   }, [isLoggedIn]);
 
   const assessmentLink = isLoggedIn 
-    ? (targetAsmtId ? `/dashboard/${targetAsmtId}` : "/dashboard") 
+    ? (targetAsmt 
+        ? (targetAsmt.status === "COMPLETED" 
+            ? (targetAsmt.attemptId ? `/results/${targetAsmt.attemptId}` : "/dashboard")
+            : `/dashboard/${targetAsmt.id}`) 
+        : "/dashboard") 
     : "/register";
 
   return (
