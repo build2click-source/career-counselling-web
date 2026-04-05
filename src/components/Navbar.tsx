@@ -3,13 +3,39 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const [targetAsmt, setTargetAsmt] = useState<{ id: string; status: string; attemptId: string | null } | null>(null);
 
   // Hide navbar on login/register or assessment pages (Focus Mode)
   if (pathname === "/login" || pathname === "/register" || pathname?.startsWith("/assessment/")) return null;
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetch("/api/user-assessments")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.assessments?.[0]) {
+            const first = data.assessments[0];
+            setTargetAsmt({
+              id: first.id,
+              status: first.status,
+              attemptId: first.attemptId
+            });
+          }
+        })
+        .catch(() => {});
+    }
+  }, [status]);
+
+  const assessmentLink = targetAsmt 
+    ? (targetAsmt.status === "COMPLETED" 
+        ? (targetAsmt.attemptId ? `/results/${targetAsmt.attemptId}` : "/dashboard")
+        : `/dashboard/${targetAsmt.id}`) 
+    : "/dashboard";
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-200">
@@ -35,9 +61,9 @@ export default function Navbar() {
             <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm font-medium text-slate-600">
               {/* Take the Test Link */}
               <Link
-                href="/dashboard"
+                href={assessmentLink}
                 className={`transition-all duration-300 hover:text-[#fb6a51] ${
-                  pathname?.startsWith("/dashboard") ? "text-[#fb6a51]" : "text-slate-600"
+                  pathname?.startsWith("/dashboard") || pathname?.startsWith("/results") ? "text-[#fb6a51]" : "text-slate-600"
                 }`}
               >
                 Take the Test
@@ -47,7 +73,7 @@ export default function Navbar() {
               <span className="text-slate-200 hidden sm:inline">|</span>
 
               {/* Admin Link (Only for Admins) */}
-              {session.user.role === "ADMIN" && (
+              {(session.user as any)?.role === "ADMIN" && (
                 <>
                   <Link
                     href="/admin"
@@ -121,4 +147,3 @@ export default function Navbar() {
     </nav>
   );
 }
-

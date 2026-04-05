@@ -34,7 +34,7 @@ const MODULE_META: Record<string, { emoji: string; slug: string; color: string }
 };
 
 export default function AssessmentModuleMapPage() {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const params = useParams();
   const assessmentId = params.assessmentId as string;
@@ -42,6 +42,7 @@ export default function AssessmentModuleMapPage() {
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [progress, setProgress] = useState<Record<string, ModuleProgress>>({});
   const [loading, setLoading] = useState(true);
+  const isAdmin = (session?.user as any)?.role === "ADMIN";
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -176,20 +177,19 @@ export default function AssessmentModuleMapPage() {
                     </div>
                   </div>
 
-                  <Link href={isComplete || !isUnlocked ? "#" : `/assessment/${mod.id}?assessmentId=${assessment.id}`} className={(!isUnlocked || isComplete) ? "cursor-default pointer-events-none w-full md:w-auto" : "w-full md:w-auto"}>
+                  <Link href={isComplete && !isAdmin ? "#" : `/assessment/${mod.id}?assessmentId=${assessment.id}`} className={(!isUnlocked && !isAdmin || (isComplete && !isAdmin)) ? "cursor-default pointer-events-none w-full md:w-auto" : "w-full md:w-auto"}>
                     <button
-                      disabled={isComplete || !isUnlocked}
+                      disabled={(!isUnlocked && !isAdmin) || (isComplete && !isAdmin)}
                       className={`w-full md:shrink-0 px-8 py-3 rounded-full font-bold text-base transition-colors ${
                         isComplete
                           ? "bg-[#4CB944]/10 text-[#4CB944] cursor-default"
                           : !isUnlocked
                           ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
-                          : isInProgress
-                          ? "bg-[#fb6a51] text-white shadow-md hover:bg-[#e55b44]"
                           : "bg-[#fb6a51] text-white shadow-md hover:bg-[#e55b44]"
                       }`}
+                      style={ (isComplete && isAdmin) ? { cursor: 'pointer', backgroundColor: '#fb6a51', color: 'white' } : {}}
                     >
-                      {isComplete ? "Done" : !isUnlocked ? "Locked" : isInProgress ? "Resume" : "Start"}
+                      {isComplete ? (isAdmin ? "Retake" : "Done") : !isUnlocked ? "Locked" : isInProgress ? "Resume" : "Start"}
                     </button>
                   </Link>
                 </div>

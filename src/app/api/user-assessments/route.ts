@@ -39,11 +39,13 @@ export async function GET() {
     const userAssessments = assessments.map(asmt => {
       const totalQuestions = asmt.modules.reduce((sum, m) => sum + m._count.questions, 0);
       
-      const asmtAttempts = attemptHistory
-        .filter(a => a.assessmentId === asmt.id)
-        .sort((a, b) => b._count.responses - a._count.responses);
-        
-      const latestAttempt = asmtAttempts.length > 0 ? asmtAttempts[0] : null;
+      const asmtAttempts = attemptHistory.filter(a => a.assessmentId === asmt.id);
+      
+      // Attempt selection logic:
+      // 1. Prefer the latest INCOMPLETE attempt (Active progress)
+      // 2. If all are completed, pick the one with most responses (Results)
+      const activeAttempt = asmtAttempts.find(a => !a.isCompleted);
+      const latestAttempt = activeAttempt || [...asmtAttempts].sort((a, b) => b._count.responses - a._count.responses)[0];
 
       const attemptsRemaining = Math.max(0, 1 - asmtAttempts.length);
 
