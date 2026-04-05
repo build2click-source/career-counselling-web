@@ -36,7 +36,15 @@ export default function Register() {
         setError("Account created! Please log in.");
         router.push("/login");
       } else {
-        router.push("/dashboard");
+        // Fetch session to check role for redirection
+        const sessionRes = await fetch("/api/auth/session");
+        const sessionData = await sessionRes.json();
+        
+        if (sessionData?.user?.role === "ADMIN") {
+          router.push("/dashboard");
+        } else {
+          router.push("/dashboard/5f7f2209-af71-4c28-bd9e-60aacdaef7b8");
+        }
       }
     } catch {
       setError("Something went wrong. Please try again.");
