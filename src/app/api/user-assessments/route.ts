@@ -27,7 +27,12 @@ export async function GET() {
       where: { userId },
       orderBy: { createdAt: "desc" },
       include: {
-        _count: { select: { responses: true } }
+        _count: { select: { responses: true } },
+        fitmentScores: {
+          orderBy: { fitmentPercentage: "desc" },
+          take: 1,
+          include: { occupationalProfile: { select: { title: true } } }
+        }
       }
     });
 
@@ -36,6 +41,18 @@ export async function GET() {
       
       const asmtAttempts = attemptHistory.filter(a => a.assessmentId === asmt.id);
       const latestAttempt = asmtAttempts.length > 0 ? asmtAttempts[0] : null;
+
+      const attemptsRemaining = Math.max(0, 3 - asmtAttempts.length);
+
+      const pastAttempts = asmtAttempts.map(a => {
+         return {
+            id: a.id,
+            createdAt: a.createdAt,
+            isCompleted: a.isCompleted,
+            topMatch: a.fitmentScores.length > 0 ? a.fitmentScores[0].occupationalProfile.title : null,
+            fitment: a.fitmentScores.length > 0 ? a.fitmentScores[0].fitmentPercentage : null,
+         };
+      });
 
       let status = "NOT_STARTED";
       let progressPct = 0;
@@ -62,6 +79,8 @@ export async function GET() {
         status,
         progressPct,
         attemptId,
+        attemptsRemaining,
+        pastAttempts,
       };
     });
 

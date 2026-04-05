@@ -4,17 +4,20 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // GET /api/results — compute scores from the most recent attempt
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const userId = (session.user as any).id as string;
 
-    // Latest attempt with responses + question metadata
+    const url = new URL(request.url);
+    const attemptId = url.searchParams.get("attemptId");
+
+    // Latest attempt with responses + question metadata OR specific
     const attempt = await prisma.attempt.findFirst({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
+      where: attemptId ? { id: attemptId, userId } : { userId },
+      orderBy: attemptId ? undefined : { createdAt: "desc" },
       include: {
         responses: {
           include: {

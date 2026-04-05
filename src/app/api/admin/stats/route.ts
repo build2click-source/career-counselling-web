@@ -57,7 +57,11 @@ export async function GET() {
       } else {
         const answered = attempt._count.responses;
         const progress = totalQuestions > 0 ? Math.round((answered / totalQuestions) * 100) : 0;
-        status = answered > 0 ? `In Progress (${progress}%)` : "Not Started";
+        if (progress === 100) {
+          status = "In Progress (100% - Pending Results View)";
+        } else {
+          status = answered > 0 ? `In Progress (${progress}%)` : "Not Started";
+        }
       }
 
       return {

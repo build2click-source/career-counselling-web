@@ -86,15 +86,23 @@ export default function AssessmentEnginePage() {
             );
             const progressData = await progressRes.json();
 
-            if (progressData.answeredMap && Object.keys(progressData.answeredMap).length > 0) {
+            if (progressData.answeredMap) {
               const savedAnswers = progressData.answeredMap as Record<string, number>;
-              setAnswers(savedAnswers);
+              
+              let localAnswers: Record<string, number> = {};
+              try {
+                const lsRaw = localStorage.getItem(`assessment_buffer_${attemptData.attemptId}`);
+                if (lsRaw) localAnswers = JSON.parse(lsRaw);
+              } catch (e) {}
+
+              const mergedAnswers = { ...savedAnswers, ...localAnswers };
+              setAnswers(mergedAnswers);
 
               // Find the first unanswered question to resume from
               const questions = data.questions as Question[];
               let resumeIdx = questions.length; // default: all done
               for (let i = 0; i < questions.length; i++) {
-                if (savedAnswers[questions[i].id] === undefined) {
+                if (mergedAnswers[questions[i].id] === undefined) {
                   resumeIdx = i;
                   break;
                 }
@@ -116,41 +124,66 @@ export default function AssessmentEnginePage() {
   const isMultipleChoice = !!currentQuestion?.correctAnswer &&
     (moduleData?.type === "Cognitive" || moduleData?.type === "SJT");
 
-  const handleSelect = useCallback(async (score: number) => {
+  const syncAnswers = useCallback(async (currentAnswersObj: Record<string, number>) => {
+    if (!attemptId || !moduleData) return;
+    
+    // Map current react state to question elements for backend submission
+    const responsesPayload = Object.entries(currentAnswersObj)
+      .map(([qId, score]) => {
+        const q = moduleData.questions.find((x) => x.id === qId);
+        if (!q) return null;
+        return {
+          attemptId,
+          questionId: qId,
+          answerText: q.options[score - 1] ?? String(score),
+          scoreValue: score
+        };
+      })
+      .filter(Boolean);
+
+    if (responsesPayload.length === 0) return;
+
+    try {
+      await fetch("/api/attempt/respond", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ responses: responsesPayload }),
+      });
+      localStorage.removeItem(`assessment_buffer_${attemptId}`);
+    } catch (err) {
+      console.error("Failed to sync", err);
+    }
+  }, [attemptId, moduleData]);
+
+  const handleSelect = useCallback((score: number) => {
     if (!currentQuestion) return;
     setSelectedScore(score);
 
     const newAnswers = { ...answers, [currentQuestion.id]: score };
     setAnswers(newAnswers);
 
-    setSaving(true);
-
-    // Persist response to DB
+    // Buffer to localStorage
     if (attemptId) {
-      await fetch("/api/attempt/respond", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          attemptId,
-          questionId: currentQuestion.id,
-          answerText: currentQuestion.options[score - 1] ?? String(score),
-          scoreValue: score,
-        }),
-      }).catch(() => {}); // fire-and-forget, don't block UX
+       try {
+         const existing = JSON.parse(localStorage.getItem(`assessment_buffer_${attemptId}`) || "{}");
+         existing[currentQuestion.id] = score;
+         localStorage.setItem(`assessment_buffer_${attemptId}`, JSON.stringify(existing));
+       } catch(e) {}
     }
 
-    // Auto-advance after brief delay
-    setTimeout(() => {
+    setSaving(true);
+    setTimeout(async () => {
       setSaving(false);
       setSelectedScore(null);
       if (currentIdx < totalQuestions - 1) {
         setCurrentIdx((i) => i + 1);
       } else {
-        // This module done — go to results if it's the last module (SJT), else dashboard
+        setSaving(true);
+        await syncAnswers(newAnswers);
         router.push(moduleData?.order === 5 ? "/results" : "/dashboard");
       }
     }, 350);
-  }, [currentQuestion, answers, attemptId, currentIdx, totalQuestions, moduleData, router]);
+  }, [currentQuestion, answers, attemptId, currentIdx, totalQuestions, moduleData, router, syncAnswers]);
 
   const handleBack = () => {
     if (currentIdx > 0) {
@@ -159,24 +192,25 @@ export default function AssessmentEnginePage() {
     }
   };
 
-  const handleNext = useCallback(() => {
+  const handleNext = useCallback(async () => {
     if (!currentQuestion || answers[currentQuestion.id] === undefined) return;
     if (currentIdx < totalQuestions - 1) {
       setCurrentIdx((i) => i + 1);
       setSelectedScore(null);
     } else {
+      setSaving(true);
+      await syncAnswers(answers);
       router.push(moduleData?.order === 5 ? "/results" : "/dashboard");
     }
-  }, [currentIdx, totalQuestions, moduleData, router, currentQuestion, answers]);
+  }, [currentIdx, totalQuestions, moduleData, router, currentQuestion, answers, syncAnswers]);
 
-  // Pause & Save: flush any pending state then navigate to dashboard
+  // Pause & Save: bulk ship cached progress then navigate to dashboard
   const handlePauseAndSave = useCallback(async () => {
     setSaving(true);
-    // All answers are already saved per-question via handleSelect.
-    // This is just a safety net + UX confirmation.
+    await syncAnswers(answers);
     setSaving(false);
     router.push("/dashboard");
-  }, [router]);
+  }, [router, answers, syncAnswers]);
 
   // ─── Loading / Error states ───────────────────────────────────────────────
   if (status === "loading" || loading || resuming) {

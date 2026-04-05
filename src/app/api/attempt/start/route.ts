@@ -27,6 +27,15 @@ export async function POST(request: NextRequest) {
 
     if (existing) return NextResponse.json({ attemptId: existing.id });
 
+    // Validate limit of 3 past attempts
+    const totalAttempts = await prisma.attempt.count({
+      where: { userId, assessmentId }
+    });
+
+    if (totalAttempts >= 3) {
+      return NextResponse.json({ error: "Maximum limit of 3 attempts reached for this assessment." }, { status: 403 });
+    }
+
     const attempt = await prisma.attempt.create({
       data: {
         userId,
