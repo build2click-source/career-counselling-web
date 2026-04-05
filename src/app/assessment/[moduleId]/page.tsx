@@ -173,14 +173,13 @@ export default function AssessmentEnginePage() {
 
     setSaving(true);
     setTimeout(async () => {
-      setSaving(false);
-      setSelectedScore(null);
       if (currentIdx < totalQuestions - 1) {
+        setSaving(false);
+        setSelectedScore(null);
         setCurrentIdx((i) => i + 1);
       } else {
-        setSaving(true);
         await syncAnswers(newAnswers);
-        router.push(moduleData?.order === 5 ? "/results" : "/dashboard");
+        router.push(`/dashboard/${moduleData.assessmentId}`);
       }
     }, 350);
   }, [currentQuestion, answers, attemptId, currentIdx, totalQuestions, moduleData, router, syncAnswers]);
@@ -200,17 +199,17 @@ export default function AssessmentEnginePage() {
     } else {
       setSaving(true);
       await syncAnswers(answers);
-      router.push(moduleData?.order === 5 ? "/results" : "/dashboard");
+      router.push(`/dashboard/${moduleData?.assessmentId}`);
     }
   }, [currentIdx, totalQuestions, moduleData, router, currentQuestion, answers, syncAnswers]);
 
-  // Pause & Save: bulk ship cached progress then navigate to dashboard
+  // Pause & Save: bulk ship cached progress then navigate to map
   const handlePauseAndSave = useCallback(async () => {
     setSaving(true);
     await syncAnswers(answers);
     setSaving(false);
-    router.push("/dashboard");
-  }, [router, answers, syncAnswers]);
+    router.push(`/dashboard/${moduleData?.assessmentId}`);
+  }, [router, answers, syncAnswers, moduleData]);
 
   // ─── Loading / Error states ───────────────────────────────────────────────
   if (status === "loading" || loading || resuming) {
@@ -232,18 +231,13 @@ export default function AssessmentEnginePage() {
     );
   }
 
-  // ─── Completion screen ────────────────────────────────────────────────────
-  if (currentIdx >= totalQuestions) {
+  // ─── Finishing Loader ────────────────────────────────────────────────────
+  if (saving && currentIdx >= totalQuestions - 1) {
     return (
       <div className="min-h-screen bg-[#f8f6f5] flex flex-col items-center justify-center gap-6 px-4">
-        <div className="text-6xl">🎉</div>
-        <h1 className="text-3xl font-extrabold text-slate-900">Module Complete!</h1>
-        <p className="text-slate-500">You've answered all {totalQuestions} questions in <strong>{moduleData.title}</strong>.</p>
-        <Link href="/dashboard">
-          <button className="px-8 py-3 rounded-full bg-[#fb6a51] text-white font-bold shadow-md hover:bg-[#e55b44] transition-all">
-            Back to Dashboard →
-          </button>
-        </Link>
+        <div className="w-12 h-12 border-4 border-[#fb6a51]/30 border-t-[#fb6a51] rounded-full animate-spin" />
+        <h1 className="text-xl font-bold text-slate-900">Saving your responses...</h1>
+        <p className="text-slate-500 font-medium tracking-wide">Please wait a moment while we map your results.</p>
       </div>
     );
   }
@@ -386,12 +380,12 @@ export default function AssessmentEnginePage() {
               Previous
             </button>
 
-            {currentQuestion && answers[currentQuestion.id] !== undefined && selectedScore === null && (
+            {currentQuestion && answers[currentQuestion.id] !== undefined && selectedScore === null && currentIdx < totalQuestions - 1 && (
               <button
                 onClick={handleNext}
                 className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 md:px-8 py-3 rounded-full font-bold text-xs md:text-sm shadow-md transition-all bg-[#fb6a51] text-white hover:bg-[#e55b44] hover:shadow-lg active:scale-95"
               >
-                {currentIdx === totalQuestions - 1 ? "Finish Module" : "Next"}
+                Next
               </button>
             )}
           </div>

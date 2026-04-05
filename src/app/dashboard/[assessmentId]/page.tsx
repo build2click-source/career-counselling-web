@@ -124,67 +124,78 @@ export default function AssessmentModuleMapPage() {
         </section>
 
         <div className="flex flex-col gap-5">
-          {assessment.modules.map((mod, idx) => {
-            const meta = MODULE_META[mod.type] ?? { emoji: "📋", slug: mod.type, color: "bg-slate-100 text-slate-600" };
-            const modProgress = progress[mod.id];
-            const answered = modProgress?.answered ?? 0;
-            const total = modProgress?.total ?? mod._count.questions;
-            const modPct = total > 0 ? Math.round((answered / total) * 100) : 0;
-            const isComplete = answered >= total && total > 0;
-            const isInProgress = answered > 0 && !isComplete;
-            const isFirst = idx === 0 && !isInProgress && !isComplete;
+          {(() => {
+            const moduleCompletions = assessment.modules.map(mod => {
+              const modProgress = progress[mod.id];
+              const answered = modProgress?.answered ?? 0;
+              const total = modProgress?.total ?? mod._count.questions;
+              return answered >= total && total > 0;
+            });
 
-            return (
-              <div
-                key={mod.id}
-                className={`transition-all duration-300 hover:-translate-y-1 bg-white flex flex-col md:flex-row items-center gap-4 md:gap-6 shadow-sm border p-6 ${
-                  isComplete
-                    ? "rounded-[2rem] border-[#4CB944]/20"
-                    : isInProgress || isFirst
-                    ? "rounded-[2rem] border-[#fb6a51]/20 shadow-md"
-                    : "rounded-[2rem] md:rounded-full border-transparent"
-                }`}
-              >
-                <div className={`size-16 rounded-full ${meta.color} flex items-center justify-center text-3xl shrink-0`}>
-                  {isComplete ? "✅" : meta.emoji}
-                </div>
+            return assessment.modules.map((mod, idx) => {
+              const meta = MODULE_META[mod.type] ?? { emoji: "📋", slug: mod.type, color: "bg-slate-100 text-slate-600" };
+              const modProgress = progress[mod.id];
+              const answered = modProgress?.answered ?? 0;
+              const total = modProgress?.total ?? mod._count.questions;
+              const modPct = total > 0 ? Math.round((answered / total) * 100) : 0;
+              const isComplete = moduleCompletions[idx];
+              const isUnlocked = idx === 0 || moduleCompletions[idx - 1];
+              const isInProgress = answered > 0 && !isComplete;
 
-                <div className="flex-1 flex flex-col gap-2 w-full text-center md:text-left">
-                  <h3 className="text-xl font-bold text-[#2D3142]">{mod.title}</h3>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-2 rounded-full bg-[#f8f6f5] overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-700 ease-out ${
-                          isComplete ? "bg-[#4CB944]" : "bg-[#fb6a51]"
-                        }`}
-                        style={{ width: `${modPct}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-semibold text-[#9095A7] whitespace-nowrap">
-                      {answered}/{total}
-                    </span>
+              return (
+                <div
+                  key={mod.id}
+                  className={`transition-all duration-300 bg-white flex flex-col md:flex-row items-center gap-4 md:gap-6 shadow-sm border p-6 ${
+                    isComplete
+                      ? "rounded-[2rem] border-[#4CB944]/20 hover:-translate-y-1"
+                      : isInProgress || (isUnlocked && idx === 0)
+                      ? "rounded-[2rem] border-[#fb6a51]/20 shadow-md hover:-translate-y-1"
+                      : !isUnlocked
+                      ? "rounded-[2rem] md:rounded-full border-slate-100 opacity-60 grayscale-[0.5]"
+                      : "rounded-[2rem] md:rounded-full border-transparent hover:-translate-y-1"
+                  }`}
+                >
+                  <div className={`size-16 rounded-full ${!isUnlocked ? "bg-slate-100 text-slate-400" : meta.color} flex items-center justify-center text-3xl shrink-0`}>
+                    {isComplete ? "✅" : !isUnlocked ? "🔒" : meta.emoji}
                   </div>
-                </div>
 
-                <Link href={isComplete ? "#" : `/assessment/${mod.id}?assessmentId=${assessment.id}`} className="w-full md:w-auto">
-                  <button
-                    disabled={isComplete}
-                    className={`w-full md:shrink-0 px-8 py-3 rounded-full font-bold text-base transition-colors ${
-                      isComplete
-                        ? "bg-[#4CB944]/10 text-[#4CB944] cursor-default"
-                        : isInProgress
-                        ? "bg-[#fb6a51] text-white shadow-md hover:bg-[#e55b44]"
-                        : isFirst
-                        ? "bg-[#fb6a51] text-white shadow-md hover:bg-[#e55b44]"
-                        : "bg-white border-2 border-[#fb6a51] text-[#fb6a51] hover:bg-[#fb6a51]/5"
-                    }`}
-                  >
-                    {isComplete ? "Done" : isInProgress ? "Resume" : "Start"}
-                  </button>
-                </Link>
-              </div>
-            );
-          })}
+                  <div className="flex-1 flex flex-col gap-2 w-full text-center md:text-left">
+                    <h3 className={`text-xl font-bold ${!isUnlocked ? 'text-slate-500' : 'text-[#2D3142]'}`}>{mod.title}</h3>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-2 rounded-full bg-[#f8f6f5] overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-700 ease-out ${
+                            isComplete ? "bg-[#4CB944]" : "bg-[#fb6a51]"
+                          }`}
+                          style={{ width: `${modPct}%` }}
+                        />
+                      </div>
+                      <span className="text-sm font-semibold text-[#9095A7] whitespace-nowrap">
+                        {answered}/{total}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Link href={isComplete || !isUnlocked ? "#" : `/assessment/${mod.id}?assessmentId=${assessment.id}`} className={(!isUnlocked || isComplete) ? "cursor-default pointer-events-none w-full md:w-auto" : "w-full md:w-auto"}>
+                    <button
+                      disabled={isComplete || !isUnlocked}
+                      className={`w-full md:shrink-0 px-8 py-3 rounded-full font-bold text-base transition-colors ${
+                        isComplete
+                          ? "bg-[#4CB944]/10 text-[#4CB944] cursor-default"
+                          : !isUnlocked
+                          ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
+                          : isInProgress
+                          ? "bg-[#fb6a51] text-white shadow-md hover:bg-[#e55b44]"
+                          : "bg-[#fb6a51] text-white shadow-md hover:bg-[#e55b44]"
+                      }`}
+                    >
+                      {isComplete ? "Done" : !isUnlocked ? "Locked" : isInProgress ? "Resume" : "Start"}
+                    </button>
+                  </Link>
+                </div>
+              );
+            });
+          })()}
         </div>
       </main>
     </div>
