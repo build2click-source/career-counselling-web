@@ -41,6 +41,7 @@ export default function AssessmentModuleMapPage() {
 
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [progress, setProgress] = useState<Record<string, ModuleProgress>>({});
+  const [attemptId, setAttemptId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const isAdmin = (session?.user as any)?.role === "ADMIN";
 
@@ -58,7 +59,19 @@ export default function AssessmentModuleMapPage() {
           if (!asmtData.error) {
             setAssessment(asmtData);
           }
-          setProgress(progressData.moduleProgress ?? {});
+          const modProg = progressData.moduleProgress ?? {};
+          setProgress(modProg);
+          setAttemptId(progressData.attemptId || null);
+
+          // Auto-redirect if complete and not admin
+          if (asmtData.modules && !isAdmin) {
+            const totalQ = asmtData.modules.reduce((s: number, m: any) => s + m._count.questions, 0);
+            const answeredQ = Object.values(modProg).reduce((s: number, p: any) => s + p.answered, 0);
+            if (totalQ > 0 && answeredQ >= totalQ && progressData.attemptId) {
+              router.push(`/results/${progressData.attemptId}`);
+              return;
+            }
+          }
           setLoading(false);
         })
         .catch(() => setLoading(false));
