@@ -184,8 +184,11 @@ export default function AssessmentEnginePage() {
     }, 350);
   }, [currentQuestion, answers, attemptId, currentIdx, totalQuestions, moduleData, router, syncAnswers]);
 
-  const handleBack = () => {
+  const handleBack = async () => {
     if (currentIdx > 0) {
+      setSaving(true);
+      await syncAnswers(answers);
+      setSaving(false);
       setCurrentIdx((i) => i - 1);
       setSelectedScore(null);
     }
@@ -252,13 +255,12 @@ export default function AssessmentEnginePage() {
         <div className="max-w-[960px] mx-auto">
           <header className="flex flex-col md:flex-row items-center justify-between px-6 md:px-10 py-4 md:h-[72px] gap-4 md:gap-0">
             <div className="flex items-center justify-between w-full md:w-auto">
-              <Link href="/dashboard">
-                <button
-                  className="flex cursor-pointer items-center justify-center rounded-full h-9 md:h-10 px-4 md:px-6 bg-[#f4e8e6] hover:bg-[#e9d2ce] transition-colors text-[#2D3142] text-xs md:text-sm font-bold"
-                >
-                  Back
-                </button>
-              </Link>
+              <button
+                onClick={handlePauseAndSave}
+                className="flex cursor-pointer items-center justify-center rounded-full h-9 md:h-10 px-4 md:px-6 bg-[#f4e8e6] hover:bg-[#e9d2ce] transition-colors text-[#2D3142] text-xs md:text-sm font-bold"
+              >
+                Back
+              </button>
 
               <button
                 onClick={handlePauseAndSave}

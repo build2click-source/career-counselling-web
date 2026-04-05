@@ -23,60 +23,83 @@ export default function Navbar() {
               ></path>
             </svg>
           </div>
-          <span className="text-lg md:text-xl font-bold tracking-tight text-slate-900 group-hover:text-[#fb6a51] transition-colors truncate max-w-[100px] sm:max-w-none">
+          <span className="text-lg md:text-xl font-bold tracking-tight text-slate-900 group-hover:text-[#fb6a51] transition-all duration-300 truncate max-w-[100px] sm:max-w-none">
             Career DNA
           </span>
         </Link>
 
-        <div className="flex items-center gap-4 md:gap-6">
+        <div className="flex items-center gap-3 md:gap-5">
           {status === "loading" ? (
             <span className="text-slate-400 animate-pulse text-xs md:text-sm">...</span>
           ) : session ? (
-            <>
-              <div className="flex items-center gap-3 md:gap-6 mr-2 md:mr-4">
-                {session.user.role === "ADMIN" ? (
+            <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm font-medium text-slate-600">
+              {/* Take the Test Link */}
+              <Link
+                href="/dashboard"
+                className={`transition-all duration-300 hover:text-[#fb6a51] ${
+                  pathname?.startsWith("/dashboard") ? "text-[#fb6a51]" : "text-slate-600"
+                }`}
+              >
+                Take the Test
+              </Link>
+
+              {/* Separator */}
+              <span className="text-slate-200 hidden sm:inline">|</span>
+
+              {/* Admin Link (Only for Admins) */}
+              {session.user.role === "ADMIN" && (
+                <>
                   <Link
                     href="/admin"
-                    className={`text-[11px] md:text-sm font-semibold transition-colors ${
-                      pathname === "/admin" ? "text-[#fb6a51]" : "text-slate-600 hover:text-[#fb6a51]"
-                    }`}
+                    className="text-[#fb6a51] font-bold hover:text-[#e55b44] transition-all duration-300"
                   >
                     Admin
                   </Link>
-                ) : (
-                  <>
-                    <Link
-                      href="/dashboard"
-                      className={`text-[11px] md:text-sm font-semibold transition-colors ${
-                        pathname?.startsWith("/dashboard") ? "text-[#fb6a51]" : "text-slate-600 hover:text-[#fb6a51]"
-                      }`}
-                    >
-                      Assessments
-                    </Link>
-                    <Link
-                      href="/results"
-                      className={`text-[11px] md:text-sm font-semibold transition-colors ${
-                        pathname === "/results" ? "text-[#fb6a51]" : "text-slate-600 hover:text-[#fb6a51]"
-                      }`}
-                    >
-                      Results
-                    </Link>
-                  </>
-                )}
+                  <span className="text-slate-200 hidden sm:inline">|</span>
+                </>
+              )}
+
+              {/* User Greeting */}
+              <div className="flex items-center gap-1.5 px-1 py-1 rounded-lg group/user cursor-default">
+                <svg
+                  className="size-4 text-slate-400 group-hover/user:text-[#fb6a51] transition-all duration-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+                <span className="text-slate-500 whitespace-nowrap group-hover/user:text-[#fb6a51] transition-all duration-300">
+                  Hi, {session.user.email?.split("@")[0]}
+                </span>
               </div>
 
-              <div className="flex items-center gap-4">
-                <span className="hidden sm:inline text-xs font-medium text-slate-400 bg-slate-100 px-2 py-1 rounded">
-                  {session.user.email}
-                </span>
-                <button
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="px-4 py-2 rounded-full bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition-all hover:shadow-md active:scale-95"
+              {/* Logout Button (Styled as Start Free) */}
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="flex items-center gap-2 bg-[#fb6a51] text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-sm hover:bg-[#e55b44] hover:shadow-md transition-all active:scale-95 group"
+              >
+                <svg
+                  className="size-4 group-hover:translate-x-0.5 transition-all duration-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
                 >
-                  Sign Out
-                </button>
-              </div>
-            </>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                Logout
+              </button>
+            </div>
           ) : (
             <div className="flex items-center gap-4">
               <Link
