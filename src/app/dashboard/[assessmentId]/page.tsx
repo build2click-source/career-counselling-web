@@ -43,6 +43,7 @@ export default function AssessmentModuleMapPage() {
   const [progress, setProgress] = useState<Record<string, ModuleProgress>>({});
   const [attemptId, setAttemptId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
   const isAdmin = (session?.user as any)?.role === "ADMIN";
 
   useEffect(() => {
@@ -78,6 +79,14 @@ export default function AssessmentModuleMapPage() {
     }
   }, [status, router, assessmentId]);
 
+  useEffect(() => {
+    if (!loading && assessment) {
+      setShowWelcome(true);
+      const timer = setTimeout(() => setShowWelcome(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, assessment]);
+
   if (status === "loading" || loading) {
     return (
       <div className="min-h-screen bg-[#F4F7F6] flex items-center justify-center">
@@ -103,6 +112,22 @@ export default function AssessmentModuleMapPage() {
 
   return (
     <div className="text-[#2D3142] min-h-screen flex flex-col items-center bg-[#F4F7F6] font-sans pb-20">
+      {/* ─── Welcome Popup Overlay ─── */}
+      {showWelcome && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-white/20 backdrop-blur-sm transition-opacity duration-300">
+          <div 
+            className="w-full max-w-sm bg-gradient-to-br from-[#fb6a51] to-[#f97316] text-white p-8 rounded-[2.5rem] shadow-2xl flex flex-col items-center text-center gap-4"
+            style={{ animation: "scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}
+          >
+            <div className="text-5xl">🌟</div>
+            <h1 className="text-2xl font-black text-white">Wish you all the best!</h1>
+            <p className="text-white/90 font-medium leading-relaxed">
+              Completing one module<br/>unlocks the next.
+            </p>
+          </div>
+        </div>
+      )}
+
       <main className="w-full max-w-[800px] px-6 pt-10 flex flex-col gap-10">
         
         <Link href="/dashboard" className="text-[#fb6a51] font-bold flex items-center gap-2 hover:translate-x-[-4px] transition-transform w-fit -mb-4">
@@ -231,6 +256,12 @@ export default function AssessmentModuleMapPage() {
           })()}
         </div>
       </main>
+      <style>{`
+        @keyframes scaleUp {
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
     </div>
   );
 }
