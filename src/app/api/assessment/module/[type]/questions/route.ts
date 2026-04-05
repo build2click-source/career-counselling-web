@@ -39,12 +39,22 @@ export async function GET(
       options: JSON.parse(q.options) as string[],
     }));
 
+    // Determine if this is the last module in its assessment
+    const maxOrderModule = await prisma.assessmentModule.findFirst({
+      where: { assessmentId: module.assessmentId },
+      orderBy: { order: "desc" },
+      select: { order: true },
+    });
+
+    const isLastModule = module.order >= (maxOrderModule?.order ?? 0);
+
     return NextResponse.json({
       moduleId: module.id,
       assessmentId: module.assessmentId,
       title: module.title,
       type: module.type,
       order: module.order,
+      isLastModule, // New field
       questions,
     });
   } catch (error) {

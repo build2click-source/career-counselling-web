@@ -21,6 +21,7 @@ interface ModuleData {
   title: string;
   type: string;
   order: number;
+  isLastModule: boolean;
   questions: Question[];
 }
 
@@ -179,7 +180,11 @@ export default function AssessmentEnginePage() {
         setCurrentIdx((i) => i + 1);
       } else {
         await syncAnswers(newAnswers);
-        router.push(`/dashboard/${moduleData.assessmentId}`);
+        if (moduleData.isLastModule && attemptId) {
+          router.push(`/results/${attemptId}`);
+        } else {
+          router.push(`/dashboard/${moduleData.assessmentId}`);
+        }
       }
     }, 350);
   }, [currentQuestion, answers, attemptId, currentIdx, totalQuestions, moduleData, router, syncAnswers]);
@@ -202,9 +207,13 @@ export default function AssessmentEnginePage() {
     } else {
       setSaving(true);
       await syncAnswers(answers);
-      router.push(`/dashboard/${moduleData?.assessmentId}`);
+      if (moduleData?.isLastModule && attemptId) {
+        router.push(`/results/${attemptId}`);
+      } else {
+        router.push(`/dashboard/${moduleData?.assessmentId}`);
+      }
     }
-  }, [currentIdx, totalQuestions, moduleData, router, currentQuestion, answers, syncAnswers]);
+  }, [currentIdx, totalQuestions, moduleData, router, currentQuestion, answers, syncAnswers, attemptId]);
 
   // Pause & Save: bulk ship cached progress then navigate to map
   const handlePauseAndSave = useCallback(async () => {
