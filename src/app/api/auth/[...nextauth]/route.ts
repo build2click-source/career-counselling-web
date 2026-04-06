@@ -1,11 +1,18 @@
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import NextAuth from "next-auth/next";
 
 export const authOptions: AuthOptions = {
+    adapter: PrismaAdapter(prisma),
     providers: [
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID || "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+        }),
         CredentialsProvider({
             name: "Credentials",
             credentials: {
@@ -26,7 +33,7 @@ export const authOptions: AuthOptions = {
                 if (!user) {
                     throw new Error("No account found with this email.");
                 }
-                const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+                const isPasswordValid = await bcrypt.compare(credentials.password, user.password || "");
                 if (!isPasswordValid) {
                     throw new Error("Invalid password. Please try again.");
                 }
@@ -38,6 +45,7 @@ export const authOptions: AuthOptions = {
                 };
             }
         })
+
     ],
     session: {
         strategy: "jwt"
