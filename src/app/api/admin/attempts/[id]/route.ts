@@ -90,7 +90,12 @@ export async function GET(
       { area: "Logical Reasoning",   pct: profileVector["Logical Reasoning"] ?? 0 },
     ];
 
-    const careerMatches = attempt.fitmentScores.map(f => ({
+    const seenIds = new Set<string>();
+    const careerMatches = attempt.fitmentScores.filter(f => {
+      if (seenIds.has(f.occupationalProfileId)) return false;
+      seenIds.add(f.occupationalProfileId);
+      return true;
+    }).map(f => ({
       id: f.occupationalProfileId,
       title: f.occupationalProfile.title,
       description: "", 

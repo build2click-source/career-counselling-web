@@ -53,6 +53,7 @@ export async function finalizeAttempt(attemptId: string) {
     ];
     const userVector = vectorKeys.map((k) => (profileVector[k] ?? 50) / 20);
 
+    const seenTitles = new Set<string>();
     const careerMatches = occupationalProfiles
       .map((profile) => {
         const target = JSON.parse(profile.targetVector) as number[];
@@ -63,10 +64,16 @@ export async function finalizeAttempt(attemptId: string) {
         const fitmentPct = Math.round((1 - distance / maxDist) * 100);
         return {
           id: profile.id,
+          title: profile.title,
           fitment: Math.max(fitmentPct, 30),
         };
       })
       .sort((a, b) => b.fitment - a.fitment)
+      .filter((m) => {
+        if (seenTitles.has(m.title)) return false;
+        seenTitles.add(m.title);
+        return true;
+      })
       .slice(0, 5);
 
     // ─── 3. Persist results ───────────────────────────────────────────────

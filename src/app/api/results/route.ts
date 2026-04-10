@@ -77,6 +77,7 @@ export async function GET(request: Request) {
     // Scale user vector to 0–5 for distance calculation
     const userVector = vectorKeys.map((k) => (profileVector[k] ?? 50) / 20);
 
+    const seenTitles = new Set<string>();
     const careerMatches = occupationalProfiles
       .map((profile) => {
         const target = JSON.parse(profile.targetVector) as number[];
@@ -93,6 +94,11 @@ export async function GET(request: Request) {
         };
       })
       .sort((a, b) => b.fitment - a.fitment)
+      .filter((m) => {
+        if (seenTitles.has(m.title)) return false;
+        seenTitles.add(m.title);
+        return true;
+      })
       .slice(0, 5);
 
     // ─── 3. Radar chart (Big 5 + top RIASEC) ─────────────────────────────
@@ -148,6 +154,7 @@ export async function GET(request: Request) {
         });
       });
     }
+
 
     return NextResponse.json({
       attemptId: attempt.id,

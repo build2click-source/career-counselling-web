@@ -113,33 +113,33 @@ export default function AdminDashboardPage() {
               <table className="w-full min-w-[600px] text-left border-collapse">
                 <thead>
                   <tr className="border-b-2 border-[#f4e8e6] text-[#9095A7] text-sm uppercase tracking-wider">
-                    <th className="pb-3 font-semibold">Candidate</th>
-                    <th className="pb-3 font-semibold">Assessment</th>
-                    <th className="pb-3 font-semibold">Status</th>
-                    <th className="pb-3 font-semibold">Top Match</th>
-                    <th className="pb-3 font-semibold">Last Active</th>
-                    <th className="pb-3 font-semibold text-right">Actions</th>
+                    <th className="px-4 py-4 font-semibold">Candidate</th>
+                    <th className="px-4 py-4 font-semibold">Assessment</th>
+                    <th className="px-4 py-4 font-semibold">Status</th>
+                    <th className="px-4 py-4 font-semibold">Top Match</th>
+                    <th className="px-4 py-4 font-semibold">Last Active</th>
+                    <th className="px-4 py-4 font-semibold text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {stats.candidates.map((c) => (
                     <tr key={c.id} className="border-b border-[#f4e8e6] hover:bg-[#f8f6f5] transition-colors">
-                      <td className="py-4">
+                      <td className="px-4 py-5">
                         <span className="font-bold text-[#2D3142]">{c.email}</span>
                       </td>
-                      <td className="py-4">
+                      <td className="px-4 py-5">
                         <span className="font-semibold text-slate-500">{c.assessmentName || "Global"}</span>
                       </td>
-                      <td className="py-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusStyle(c.status)}`}>
+                      <td className="px-4 py-5">
+                        <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${getStatusStyle(c.status)}`}>
                           {c.status}
                         </span>
                       </td>
-                      <td className="py-4 font-medium text-[#2D3142]">{c.topMatch}</td>
-                      <td className="py-4 text-[#9095A7] text-sm">
+                      <td className="px-4 py-5 font-medium text-[#2D3142]">{c.topMatch}</td>
+                      <td className="px-4 py-5 text-[#9095A7] text-sm">
                         {formatDistanceToNow(new Date(c.lastActive), { addSuffix: true })}
                       </td>
-                      <td className="py-4 text-right">
+                      <td className="px-4 py-5 text-right">
                         {c.attemptId ? (
                           <Link href={`/admin/attempts/${c.attemptId}`} className="text-sm font-bold text-[#fb6a51] hover:underline">
                             View Details

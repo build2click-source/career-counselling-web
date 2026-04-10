@@ -73,7 +73,7 @@ export default function AdminProfilesPage() {
             href="/admin/profiles/import"
             className="px-6 py-3 rounded-full bg-[#fb6a51] text-white font-bold shadow-md hover:bg-[#e55b44] transition-all active:scale-95 flex items-center gap-2"
           >
-            <span>+</span> Import from O*NET
+            <span>+</span> Import Career
           </Link>
         </div>
 
@@ -115,7 +115,7 @@ export default function AdminProfilesPage() {
           ))}
           {profiles.length === 0 && (
             <div className="md:col-span-2 py-20 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200">
-               <p className="text-slate-400 font-medium italic">No profiles found. Start by importing from O*NET.</p>
+               <p className="text-slate-400 font-medium italic">No profiles found. Start by importing a new career.</p>
             </div>
           )}
         </div>

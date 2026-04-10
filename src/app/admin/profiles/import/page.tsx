@@ -33,6 +33,7 @@ export default function ONetImportPage() {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [preview, setPreview] = useState<PreviewData | null>(null);
   const [saving, setSaving] = useState(false);
+  const [secretKey, setSecretKey] = useState("");
 
   const dimensionKeys = [
     "Extraversion", "Agreeableness", "Conscientiousness", "Neuroticism", "Openness",
@@ -79,6 +80,10 @@ export default function ONetImportPage() {
 
   const handleSave = async () => {
     if (!preview) return;
+    if (secretKey !== "2326") {
+      alert("Invalid secret key. Cannot import profile.");
+      return;
+    }
     setSaving(true);
     try {
       const res = await fetch("/api/admin/profiles", {
@@ -105,9 +110,7 @@ export default function ONetImportPage() {
         <Link href="/admin/profiles" className="text-[#fb6a51] font-bold flex items-center gap-2 mb-8 hover:translate-x-[-4px] transition-transform w-fit">
           ← Back to Profiles
         </Link>
-        
-        <h1 className="text-4xl font-extrabold tracking-tight mb-4">O*NET Career Import</h1>
-        <p className="text-slate-500 mb-10 max-w-2xl">Search the official U.S. Department of Labor database to import career profiles and map them to our psychometric model.</p>
+        <h1 className="text-4xl font-extrabold tracking-tight mb-4">Career Import</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           
@@ -153,7 +156,7 @@ export default function ONetImportPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                     </svg>
                   </div>
-                  <p className="text-slate-400 text-sm italic">Search O*NET categories to see potential career candidates.</p>
+                  <p className="text-slate-400 text-sm italic">Search categories to see potential career candidates.</p>
                 </div>
               )}
             </div>
@@ -164,7 +167,7 @@ export default function ONetImportPage() {
             {loadingDetails ? (
               <div className="bg-white rounded-[2.5rem] p-20 flex flex-col items-center justify-center space-y-6 shadow-sm border border-slate-100 h-full">
                 <div className="size-12 border-4 border-[#fb6a51] border-t-transparent rounded-full animate-spin" />
-                <p className="text-slate-400 font-medium">Fetching multi-source descriptors from O*NET...</p>
+                <p className="text-slate-400 font-medium">Fetching multi-source descriptors...</p>
               </div>
             ) : preview ? (
               <div className="bg-white rounded-[2.5rem] p-10 shadow-xl border border-slate-100 flex flex-col gap-10 animate-fadeIn">
@@ -178,13 +181,23 @@ export default function ONetImportPage() {
                       onChange={(e) => setPreview({ ...preview, description: e.target.value })}
                     />
                   </div>
-                  <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="px-8 py-4 rounded-3xl bg-[#fb6a51] text-white font-bold shadow-lg shadow-[#fb6a51]/30 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
-                  >
-                    {saving ? "Creating Profile..." : "Save to Marketplace"}
-                  </button>
+                  <div className="flex flex-col gap-3 items-end">
+                    <input
+                      type="password"
+                      placeholder="Enter 4-digit key"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-[#fb6a51] focus:ring-2 focus:ring-[#fb6a51]/20 outline-none text-center tracking-widest text-[#2D3142] font-semibold"
+                      maxLength={4}
+                      value={secretKey}
+                      onChange={(e) => setSecretKey(e.target.value)}
+                    />
+                    <button
+                      onClick={handleSave}
+                      disabled={saving || secretKey.length !== 4}
+                      className="w-full px-8 py-4 rounded-2xl bg-[#fb6a51] text-white font-bold shadow-lg shadow-[#fb6a51]/30 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                    >
+                      {saving ? "Creating Profile..." : "Add to Profiles"}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
@@ -218,7 +231,7 @@ export default function ONetImportPage() {
                     </svg>
                   </div>
                   <p className="text-xs leading-relaxed text-indigo-900/60">
-                    <strong>Mapper Logic Applied:</strong> We have synthesized O*NET's Interests, Work Styles, and Basic Abilities to form this 14-point vector. 
+                    <strong>Mapper Logic Applied:</strong> We have synthesized Interests, Work Styles, and Basic Abilities to form this 14-point vector. 
                     Cognitive scores are scaled 0–1, while Personality and Social dimensions are scaled 0–5. Use the sliders to manually refine the "Ideal Profile" before saving.
                   </p>
                 </div>
